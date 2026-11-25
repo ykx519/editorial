@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社论生成工作台｜提示词 · API 设置 · 外接生成</title>
+<style>
+  :root{
+    --paper:#FAF7F2; --ink:#1C1B19; --muted:#6B6459; --accent:#B3372B;
+    --rule:#E2DCD2; --link:#2F4156; --panel:#FFFFFF; --ok:#2F6B4F; --warn:#A6642A;
+    --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",serif;
+    --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.8;}
+  .topbar{background:#22201D;color:#F5F0E8;padding:.85rem 1.4rem;display:flex;flex-wrap:wrap;align-items:center;gap:1rem;}
+  .topbar .brand{font-family:var(--serif);font-size:1.15rem;font-weight:700;letter-spacing:.06em;}
+  .topbar .brand em{color:var(--accent);font-style:normal;}
+  .topbar nav{margin-left:auto;display:flex;gap:.4rem;flex-wrap:wrap;}
+  .topbar nav a{color:#E9E2D6;text-decoration:none;font-size:.88rem;padding:.32rem .85rem;border:1px solid #4A453E;}
+  .topbar nav a.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .badge{font-size:.75rem;padding:.15rem .6rem;border:1px solid #4A453E;color:#C9BFAE;}
+  .badge.ok{color:#9BD3B3;border-color:#3C6B54;}
+  main{max-width:60rem;margin:0 auto;padding:1.6rem 1.2rem 3.5rem;}
+  section.panel{background:var(--panel);border:1px solid var(--rule);padding:1.5rem 1.6rem 1.7rem;margin-bottom:1.5rem;}
+  .sec-head{display:flex;align-items:baseline;gap:.8rem;border-bottom:1px solid var(--rule);padding-bottom:.8rem;margin-bottom:1.2rem;}
+  .sec-num{font-family:var(--serif);color:var(--accent);font-size:1.5rem;font-weight:700;line-height:1;}
+  .sec-head h2{font-family:var(--serif);font-size:1.22rem;margin:0;font-weight:700;}
+  .sec-head .hint{margin-left:auto;font-size:.8rem;color:var(--muted);}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.95rem 1.1rem;}
+  label.f{display:block;font-size:.82rem;color:var(--muted);letter-spacing:.04em;}
+  input[type=text],input[type=password],input[type=number],select,textarea{
+    width:100%;padding:.55rem .7rem;border:1px solid var(--rule);background:#FDFCFA;
+    font-family:inherit;font-size:.92rem;color:var(--ink);border-radius:0;margin-top:.3rem;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid #D9B7AF;border-color:var(--accent);}
+  textarea{line-height:1.75;resize:vertical;}
+  .row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;}
+  button{font-family:inherit;font-size:.9rem;padding:.55rem 1.15rem;border:1px solid var(--accent);
+    background:var(--accent);color:#fff;cursor:pointer;letter-spacing:.05em;}
+  button.ghost{background:transparent;color:var(--accent);}
+  button.dark{background:#22201D;border-color:#22201D;}
+  button:disabled{opacity:.45;cursor:not-allowed;}
+  button:hover:not(:disabled){filter:brightness(1.08);}
+  .status{font-size:.83rem;color:var(--muted);margin-left:.4rem;align-self:center;}
+  .status.ok{color:var(--ok);} .status.err{color:var(--accent);} .status.busy{color:var(--warn);}
+  .tip{font-size:.8rem;color:var(--muted);margin:.7rem 0 0;}
+  .tip b{color:var(--warn);}
+  #promptOut{min-height:22rem;font-family:var(--sans);font-size:.86rem;}
+  #genOut{min-height:16rem;font-family:var(--serif);font-size:1.02rem;line-height:1.95;white-space:pre-wrap;background:#FCFAF6;}
+  .doc-wrap{border:1px solid var(--rule);padding:1.35rem 1.5rem;background:#FCFAF6;}
+  .kv{display:flex;gap:.55rem;flex-wrap:wrap;font-size:.78rem;color:var(--muted);}
+  .kv span{border:1px solid var(--rule);padding:.12rem .55rem;}
+  details.adv{margin-top:.9rem;border-top:1px dashed var(--rule);padding-top:.75rem;}
+  details.adv summary{cursor:pointer;font-size:.85rem;color:var(--muted);}
+  footer{max-width:60rem;margin:0 auto;padding:0 1.2rem 2.6rem;color:var(--muted);font-size:.8rem;}
+  a{color:var(--link);}
+  @media (max-width:640px){main{padding:1.1rem .8rem 2.4rem;}section.panel{padding:1.15rem 1rem;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">社论<em>·</em>工坊</div>
+  <span class="badge" id="apiBadge">API 未配置</span>
+  <nav>
+    <a class="on" href="index.html">生成工作台</a>
+    <a href="score.html">文章评分</a>
+  </nav>
+</div>
+
+<main>
+  <!-- ① 提示词生成 -->
+  <section class="panel" id="sec-prompt">
+    <div class="sec-head">
+      <span class="sec-num">一</span>
+      <h2>提示词生成</h2>
+      <span class="hint">填写参数 → 生成可复用的《社论写作提示词》</span>
+    </div>
+    <div class="grid">
+      <label class="f">议题 / 主题
+        <input type="text" id="p-topic" placeholder="例。土地财政转型"></label>
+      <label class="f">核心论点（XXX制度/政策如果不随XXX而改革，再XXX也终将XXX）
+        <input type="text" id="p-thesis" placeholder="例。地方财政制度如果不随房地产供求格局而改革……"></label>
+      <label class="f">分论点方向 1
+        <input type="text" id="p-sub1" placeholder="例。卖地收入四年腰斩"></label>
+      <label class="f">分论点方向 2
+        <input type="text" id="p-sub2" placeholder="例。化债额度买不来时间"></label>
+      <label class="f">分论点方向 3
+        <input type="text" id="p-sub3" placeholder="例。增量扩张走到尽头"></label>
+      <label class="f">政策文件与数据线索（可选）
+        <input type="text" id="p-clues" placeholder="例。财政部2026年1-10月财政收支情况、中央城市工作会议"></label>
+      <label class="f">发布渠道与目标读者（可选）
+        <input type="text" id="p-audience" placeholder="例。财经媒体评论版，面向政策研究者与公众"></label>
+      <label class="f">模型接入信息（可选）
+        <input type="text" id="p-modelinfo" placeholder="例。DeepSeek + 环境变量密钥 + deepseek-chat"></label>
+    </div>
+    <div class="row">
+      <button id="btnBuild">生成提示词</button>
+      <button class="ghost" id="btnSample">填入示例参数</button>
+      <button class="ghost" id="btnCopyPrompt">复制提示词</button>
+      <button class="ghost" id="btnDownloadPrompt">下载 prompt_editorial.md</button>
+      <span class="status" id="promptStatus"></span>
+    </div>
+    <label class="f" style="margin-top:1.1rem;">提示词成稿区（可直接编辑，生成社论时以此区内容为准）
+      <textarea id="promptOut" spellcheck="false"></textarea>
+    </label>
+    <p class="tip">提示词内置数据与来源偏好、禁用词清单、三段式论证结构与自查清单，改动请保持约束条款完整。</p>
+  </section>
+
+  <!-- ② API 接口设置 -->
+  <section class="panel" id="sec-api">
+    <div class="sec-head">
+      <span class="sec-num">二</span>
+      <h2>API 接口设置</h2>
+      <span class="hint">OpenAI 兼容接口，切换厂商只换三处</span>
+    </div>
+    <div class="grid">
+      <label class="f">厂商快捷选择
+        <select id="a-provider">
+          <option value="deepseek">DeepSeek</option>
+          <option value="qwen">通义千问（DashScope）</option>
+          <option value="glm">智谱 GLM</option>
+          <option value="kimi">Kimi（Moonshot）</option>
+          <option value="mimo">MiMo（小米开放平台）</option>
+          <option value="custom">自定义</option>
+        </select></label>
+      <label class="f">base_url
+        <input type="text" id="a-base" placeholder="https://api.deepseek.com/v1"></label>
+      <label class="f">模型名
+        <input type="text" id="a-model" placeholder="deepseek-chat"></label>
+      <label class="f">API Key（仅保存在本机浏览器）
+        <input type="password" id="a-key" placeholder="sk-..."></label>
+      <label class="f">temperature
+        <input type="number" id="a-temp" min="0" max="2" step="0.1" value="0.7"></label>
+      <label class="f">请求超时（秒）
+        <input type="number" id="a-timeout" min="30" max="900" step="30" value="300"></label>
+    </div>
+    <label class="f" style="margin-top:.95rem;">System Prompt
+      <textarea id="a-system" rows="2">你是资深社论评论员兼排版师，严格执行提示词中的禁令与来源规则。</textarea>
+    </label>
+    <details class="adv">
+      <summary>高级选项（接口地址覆盖 / CORS 受限时使用本地代理）</summary>
+      <label class="f" style="margin-top:.7rem;">完整接口地址覆盖（可选，指向 /chat/completions 的完整 URL）
+        <input type="text" id="a-endpoint" placeholder="留空则使用 base_url + /chat/completions"></label>
+      <p class="tip">部分厂商接口不允许浏览器跨域直连。若请求被 CORS 拦截，可在此填入本地代理地址，或用 <b>测试连接</b> 按钮确认连通性。</p>
+    </details>
+    <div class="row">
+      <button id="btnSaveApi">保存配置</button>
+      <button class="dark" id="btnTestApi">测试连接</button>
+      <button class="ghost" id="btnClearKey">清除本机密钥</button>
+      <span class="status" id="apiStatus"></span>
+    </div>
+    <p class="tip">密钥仅写入本机 <b>localStorage</b>，不上传、不写入文件、不随提示词外发。请勿把密钥硬编码进提示词或提交到仓库。</p>
+  </section>
+
+  <!-- ③ 外接 API 生成社论 -->
+  <section class="panel" id="sec-gen">
+    <div class="sec-head">
+      <span class="sec-num">三</span>
+      <h2>外接 API 生成社论</h2>
+      <span class="hint">调用上方接口，按提示词产出成稿</span>
+    </div>
+    <div class="row" style="margin-top:0;">
+      <button id="btnGen">生成社论</button>
+      <button class="ghost" id="btnAbort" disabled>中止</button>
+      <button class="ghost" id="btnCopyGen">复制全文</button>
+      <button class="ghost" id="btnDownloadMd">下载成稿 .md</button>
+      <button class="dark" id="btnRender">渲染为报刊页面</button>
+      <button class="ghost" id="btnDownloadHtml">下载成稿 .html</button>
+      <span class="status" id="genStatus"></span>
+    </div>
+    <div class="row" style="margin:.7rem 0 1rem;">
+      <span class="kv" id="genMeta"></span>
+    </div>
+    <div class="doc-wrap"><div id="genOut">成稿输出区。点击「生成社论」开始。</div></div>
+    <p class="tip">成稿应包含主标题、导语、三个分论点、措施、尾声、信息来源与备选标题。可将输出粘贴到 <a href="score.html">文章评分</a> 页做综合评分。</p>
+  </section>
+</main>
+
+<footer>
+  社论·工坊｜单文件工具页，无构建依赖，双击即可打开。提示词模板见 <code>prompt_editorial.md</code>，成稿样式见 <code>editorial_land-finance.html</code>。
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- 提示词模板 ---------- */
+  var TEMPLATE = [
+"# 社论写作提示词（可复用模板）","",
+"> 用法。将文中【】占位符替换为具体参数后，整体粘贴进任意智能体 API 的对话接口（作为 user message，或配合一条 system message），即可产出符合规范的社论成稿。所有约束条款不可删减。","",
+"## 角色","",
+"你同时承担两个角色。第一重身份是资深社论评论员，擅长经济、政策与社会治理议题的深度评论，文风冷静、笃定、有锋芒。第二重身份是编辑与排版师，负责把成稿渲染为可直接发布的报刊风格页面。","",
+"## 输入参数","",
+"- 议题/主题。【议题/主题】",
+"- 核心论点。【核心论点，格式为 XXX制度/政策如果不随XXX而改革，再XXX也终将XXX】",
+"- 分论点方向（可选，3个）。【分论点方向1】【分论点方向2】【分论点方向3】",
+"- 政策文件与数据线索（可选）。【政策文件与数据线索】",
+"- 发布渠道与目标读者（可选）。【发布渠道与目标读者】",
+"- 模型接入信息（可选）。【厂商】+【API Key】+【模型名】","",
+"## 任务","",
+"以【议题/主题】为题，依据下列全部要求撰写一篇社论，核心论点与分论点按输入参数执行。","",
+"### 1.【标题要求】","",
+"主标题 1 个 + 备选标题 3 至 5 个。要求有冲击力与悬念感，可含隐喻、反差或警示性比喻，禁用平铺直叙，标题层级不超过两层。","",
+"### 2.【篇幅】","",
+"正文 2000 至 3000 字，不含信息来源。","",
+"### 3.【核心论点】","",
+"【XXX制度/政策如果不随XXX而改革，再XXX也终将XXX】","",
+"### 4.【分论点】","",
+"3 个分论点，方向分别为【分论点方向1】【分论点方向2】【分论点方向3】。每个分论点须包含。判断句形式的小标题。带时间、数据、案例的论据。从现象到制度层面的归因分析。固定三段式。现象与数据、历史或国际对照、制度归因与风险预判。","",
+"### 5.【措施】","",
+"单独设小标题，用“第一、第二、第三、第四”列出 4 条可操作建议。每条必须包含。政策文件名称（如有）与发布时间。具体数据或目标数值。落地场景描述（谁、在什么环节、做什么、达到什么效果）。","",
+"### 6.【尾声】","",
+"呼应标题的核心隐喻，以警示性比喻收束，不超过 150 字，参考句式。“倘若XXX持续滞后，当下看似XXX的图景，不过是转瞬即逝的XXX。等到XXX消散，自然会看清，究竟是谁在XXX中裸泳。”","",
+"### 7.【信息来源】","",
+"格式固定为。序号. 来源类型｜来源名称《文章标题》——具体数据摘要 + URL。","每条来源必须附完整可访问的 URL（http 开头），禁止写“URL待补”或省略链接，无法给出可访问链接的来源必须删除或明确标注待核。","",
+"### 8.【数据与来源偏好】","",
+"1. 引用数据与检索来源时，按以下优先级取材，同题冲突时以高优先级为准。",
+"   第一优先级。政府报告与官方统计。国务院及各部委文件、白皮书、统计公报、",
+"   公报数据、监管机构发布（如国家统计局、中国民航局、工信部等）。",
+"   第二优先级。官媒报道。人民日报、新华社、央视、光明日报、经济日报、",
+"   中国日报、中新社及各省党报。",
+"   第三优先级。行业报告。行业协会、研究院所、权威咨询机构发布的行业报告",
+"   与年度白皮书。",
+"   第四优先级。维基百科、百度百科。用于背景性事实、名词释义、时间线梳理。",
+"2. 数据标注规则。每条引用须标注来源类型（政府报告 / 官媒 / 行业报告 / 百科），",
+"   政策类论据优先引用文件原文与发布时间，而不是二手转述。",
+"3. 交叉核验规则。百科类来源给出的数字，若可追溯至其引用的原始报告或官媒，",
+"   改引原始来源。仅有百科单一来源的数字，标注“待核”并降低其在论证中的权重，",
+"   不得作为核心论据的唯一支撑。",
+"4. 取舍规则。数据打架时，在文中以“据XX报告……而XX统计口径下……”的句式",
+"   说明口径差异，不得只挑对自己论点有利的一个数字。",
+"5. 边界规则。不引用无法给出可访问链接的来源。不使用自媒体、商业软文、",
+"   无署名网文作为数据来源。涉外数据注明统计机构与统计年份。","",
+"### 9.【语言风格要求】","",
+"- 禁用冒号与分号，用句号断句，以短句为主",
+"- 禁用“首先/其次/最后”“总而言之”“综上所述”“不难看出”等过渡词",
+"- 禁用“破局、赋能、抓手、底层逻辑、顶层设计、赛道、痛点、牌、出牌”等黑话与AI比喻",
+"- 每个论点嵌入至少 1 至 2 个带时间、规模、比例的具体数据，数据后用“翻译过来就是……”或“换句话说……”做通俗解读",
+"- 全文限用 1 至 2 个核心隐喻，贯穿首尾，禁止堆砌比喻",
+"- 段落不超过 5 至 6 句",
+"- 论证主线固定为。数据对比切入 → 现象描述 → 历史或国际对照 → 归因到制度 → 提出路径 → 隐喻收尾",
+"- 批判性用词准许，但必须指向制度与结构，不得进行人身攻击或事实性指控","",
+"### 10.【输出格式】","",
+"直接输出完整社论，含标题、导语、3 个分论点、措施、尾声、信息来源。禁止任何前言、后记、自我说明或“以下是”之类的开场白。正文使用提示词参数【发布渠道与目标读者】所要求的称谓与语体。","",
+"## 成稿附带要求","",
+"- 标题。主标题 1 个，另附 3 至 5 个备选标题（置于文末）。",
+"- 导语。用最新具体数据、时间、现象切入，直接点明矛盾，禁用寒暄套话。",
+"- 正文。3 个论断式数字小标题（一、二、三），小标题本身必须是亮明观点的短句。",
+"- 措施。单独小标题，“第一、第二、第三、第四”四条建议，每条含文件名、时间、数据或目标值、落地场景。",
+"- 尾声。呼应标题隐喻，干脆收束，不超过 150 字。",
+"- 信息来源。严格执行“数据与来源偏好”的四级优先序与标注规则，格式见第 7 条。来源不明的数据不得杜撰，标注“待核”。",
+"- 全文数据点不少于 6 处，其中政府报告与官媒来源合计不少于 3 处。",
+"- 每处数据含具体时间、规模、比例，并附一句通俗解读。","",
+"## 自查清单（输出前逐项核对）","",
+"1. 正文 2000 至 3000 字。",
+"2. 全文扫描禁用词（冒号、分号、首先、其次、总而言之、破局、赋能、抓手、底层逻辑、顶层设计、赛道、痛点、牌、出牌），命中即改写。",
+"3. 数据点不少于 6 处，政府报告与官媒来源合计不少于 3 处，每处含时间与规模或比例。",
+"4. 来源标注完整，百科单一来源的数字已标“待核”。",
+"5. 核心隐喻 1 至 2 个，首尾呼应。",
+"6. 尾声不超过 150 字。",
+"7. 段落不超过 6 句。",
+"8. 每条措施含文件名、时间、数值、场景。",
+"9. 信息来源每条含来源类型、名称、标题、数据摘要、URL。",
+"10. 输出为纯文本成稿，无前言后记，无自我说明。"
+  ].join("\n");
+
+  var DEFAULT_SYSTEM = "你是资深社论评论员兼排版师，严格执行提示词中的禁令与来源规则。信息来源必须逐条给出完整可访问的 URL（http 开头），禁止写“URL待补”或省略链接，无法给出可访问链接的来源必须删除或明确标注待核。";
+
+  var PROVIDERS = {
+    deepseek:{base:"https://api.deepseek.com/v1", model:"deepseek-chat"},
+    qwen:{base:"https://dashscope.aliyuncs.com/compatible-mode/v1", model:"qwen-plus"},
+    glm:{base:"https://open.bigmodel.cn/api/paas/v4", model:"glm-4-plus"},
+    kimi:{base:"https://api.moonshot.cn/v1", model:"moonshot-v1-8k"},
+    mimo:{base:"", model:""},
+    custom:{base:"", model:""}
+  };
+
+  /* ---------- 配置存取 ---------- */
+  var CFG_KEYS = {base:"sheping.api.base", model:"sheping.api.model", key:"sheping.api.key",
+    temp:"sheping.api.temp", system:"sheping.api.system", timeout:"sheping.api.timeout",
+    endpoint:"sheping.api.endpoint", provider:"sheping.api.provider"};
+
+  function getConfig(){
+    return {
+      provider: $("a-provider").value,
+      base: $("a-base").value.trim().replace(/\/+$/,""),
+      model: $("a-model").value.trim(),
+      key: $("a-key").value.trim(),
+      temp: parseFloat($("a-temp").value || "0.7"),
+      system: $("a-system").value.trim(),
+      timeout: parseInt($("a-timeout").value || "300", 10),
+      endpoint: $("a-endpoint").value.trim()
+    };
+  }
+  function saveConfig(){
+    var c = getConfig();
+    try{
+      localStorage.setItem(CFG_KEYS.provider, c.provider);
+      localStorage.setItem(CFG_KEYS.base, c.base);
+      localStorage.setItem(CFG_KEYS.model, c.model);
+      localStorage.setItem(CFG_KEYS.key, c.key);
+      localStorage.setItem(CFG_KEYS.temp, String(c.temp));
+      localStorage.setItem(CFG_KEYS.system, c.system);
+      localStorage.setItem(CFG_KEYS.timeout, String(c.timeout));
+      localStorage.setItem(CFG_KEYS.endpoint, c.endpoint);
+    }catch(e){}
+    refreshBadge();
+  }
+  function loadConfig(){
+    function g(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
+    var provider = g(CFG_KEYS.provider) || "deepseek";
+    $("a-provider").value = PROVIDERS[provider] ? provider : "custom";
+    $("a-base").value = g(CFG_KEYS.base) || PROVIDERS[$("a-provider").value].base;
+    $("a-model").value = g(CFG_KEYS.model) || PROVIDERS[$("a-provider").value].model;
+    $("a-key").value = g(CFG_KEYS.key);
+    $("a-temp").value = g(CFG_KEYS.temp) || "0.7";
+    $("a-timeout").value = g(CFG_KEYS.timeout) || "300";
+    $("a-system").value = g(CFG_KEYS.system) || DEFAULT_SYSTEM;
+    $("a-endpoint").value = g(CFG_KEYS.endpoint);
+    refreshBadge();
+  }
+  function refreshBadge(){
+    var c = getConfig();
+    var b = $("apiBadge");
+    if(c.key && c.base && c.model){ b.textContent = "API 已配置 · " + c.model; b.className = "badge ok"; }
+    else { b.textContent = "API 未配置"; b.className = "badge"; }
+  }
+
+  /* ---------- 提示词构建 ---------- */
+  function fill(str, key, val){ return val ? str.split(key).join(val) : str; }
+  function buildPrompt(){
+    var t = TEMPLATE;
+    t = fill(t, "【议题/主题】", $("p-topic").value.trim());
+    t = fill(t, "【核心论点，格式为 XXX制度/政策如果不随XXX而改革，再XXX也终将XXX】", $("p-thesis").value.trim());
+    t = fill(t, "【分论点方向1】", $("p-sub1").value.trim());
+    t = fill(t, "【分论点方向2】", $("p-sub2").value.trim());
+    t = fill(t, "【分论点方向3】", $("p-sub3").value.trim());
+    t = fill(t, "【政策文件与数据线索】", $("p-clues").value.trim());
+    t = fill(t, "【发布渠道与目标读者】", $("p-audience").value.trim());
+    t = fill(t, "【厂商】+【API Key】+【模型名】", $("p-modelinfo").value.trim());
+    return t;
+  }
+  function status(el, msg, cls){ el.textContent = msg; el.className = "status" + (cls ? " " + cls : ""); }
+
+  /* ---------- 通用请求 ---------- */
+  function endpointUrl(c){
+    if(c.endpoint) return c.endpoint;
+    return c.base + "/chat/completions";
+  }
+  var currentAbort = null;
+  function callChat(messages, onDone, onFail, withAbort){
+    var c = getConfig();
+    if(!c.base || !c.model || !c.key){ onFail(new Error("请先在「API 接口设置」中填写 base_url、模型名与 API Key，并保存配置。")); return; }
+    var ctrl = new AbortController();
+    currentAbort = ctrl;
+    var timer = setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, c.timeout * 1000);
+    fetch(endpointUrl(c), {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Authorization":"Bearer " + c.key },
+      body: JSON.stringify({ model:c.model, messages:messages, temperature:c.temp }),
+      signal: ctrl.signal
+    }).then(function(resp){
+      return resp.text().then(function(txt){
+        var data = null;
+        try{ data = JSON.parse(txt); }catch(e){}
+        if(!resp.ok){
+          var detail = (data && data.error && data.error.message) ? data.error.message : txt.slice(0,300);
+          throw new Error("HTTP " + resp.status + "。" + detail);
+        }
+        if(!data || !data.choices || !data.choices[0] || !data.choices[0].message){
+          throw new Error("接口返回格式异常。" + txt.slice(0,200));
+        }
+        return data.choices[0].message.content || "";
+      });
+    }).then(function(text){
+      clearTimeout(timer); currentAbort = null;
+      onDone(text, c);
+    }).catch(function(err){
+      clearTimeout(timer); currentAbort = null;
+      if(err && err.name === "AbortError"){ onFail(new Error("请求已中止或超时。")); return; }
+      if(err && /Failed to fetch|NetworkError|CORS/i.test(String(err.message))){
+        onFail(new Error("网络或跨域受限（CORS）。可在高级选项中填入本地代理的完整接口地址后重试。原始错误。" + err.message));
+        return;
+      }
+      onFail(err);
+    });
+    return ctrl;
+  }
+
+  /* ---------- 成稿渲染（markdown-lite） ---------- */
+  function fmtDate(d){
+    return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日";
+  }
+  function escapeHtml(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function inlineMd(s){
+    var e = escapeHtml(s);
+    e = e.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    e = e.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    e = e.replace(/(https?:\/\/[^\s<>"']+)/g, function(m){
+      var url = m, trail = "";
+      var tm = url.match(/[，。、；：）)】」》]+$/);
+      if(tm){ trail = tm[0]; url = url.slice(0, -trail.length); }
+      return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>' + trail;
+    });
+    return e;
+  }
+  function splitItems(t){
+    var idx = [], re = /(\d{1,2})[.、]\s/g, m;
+    while((m = re.exec(t))){
+      var pre = t.charAt(m.index - 1);
+      if(pre && /[0-9.]/.test(pre)) continue;
+      idx.push(m.index);
+    }
+    if(!idx.length) return [t];
+    var parts = [];
+    for(var i = 0; i < idx.length; i++){
+      var seg = t.slice(idx[i], idx[i + 1] || t.length).trim();
+      if(seg) parts.push(seg);
+    }
+    return parts;
+  }
+  function headingOf(ln){
+    var m = ln.match(/^\s*(#{1,6})\s+(.+?)\s*$/);
+    if(m) return {level:m[1].length, text:m[2].replace(/^#+\s*/,"")};
+    var t = ln.trim();
+    if(t && t.length <= 40 && /^(备选标题|导语|信息来源|尾声|措施|结语|改革路径|[一二三四五六]、)/.test(t)){
+      return {level:2, text:t};
+    }
+    return null;
+  }
+  function headingHtml(txt){
+    var mm = txt.match(/^([一二三四五六]、)([\s\S]*)$/);
+    if(mm) return '<h2><span class="num">' + escapeHtml(mm[1]) + '</span>' + escapeHtml(mm[2]) + '</h2>';
+    return "<h2>" + escapeHtml(txt) + "</h2>";
+  }
+  function renderEditorialHtml(text){
+    var accessDate = fmtDate(new Date());
+    var rawLines = text.replace(/\r/g, "").split("\n");
+    /* 删除备选标题区块 */
+    var lines = [], dropping = false;
+    for(var i = 0; i < rawLines.length; i++){
+      var hh = headingOf(rawLines[i]);
+      if(hh && /备选标题/.test(hh.text)){ dropping = true; continue; }
+      if(dropping){
+        if(hh){ dropping = false; } else { continue; }
+      }
+      lines.push(rawLines[i]);
+    }
+    /* 首行即主标题 */
+    var title = "社论成稿", out = [], started = false;
+    while(lines.length && !started){
+      var first = lines.shift();
+      if(!first.trim()) continue;
+      var fh = headingOf(first);
+      title = fh ? fh.text : first.trim().replace(/^#+\s*/, "");
+      out.push("<h1>" + escapeHtml(title) + "</h1>");
+      started = true;
+    }
+    var paraBuf = [], listBuf = [], srcBuf = [];
+    var srcMode = false, secClass = "";
+    function openSec(cls){
+      closeSec();
+      if(cls){ out.push('<section class="' + cls + '">'); secClass = cls; }
+    }
+    function closeSec(){
+      if(secClass){ out.push("</section>"); secClass = ""; }
+    }
+    function flushPara(){
+      if(!paraBuf.length) return;
+      out.push("<p>" + inlineMd(paraBuf.join("")) + "</p>");
+      paraBuf = [];
+    }
+    function flushList(){
+      if(!listBuf.length) return;
+      out.push("<ol class=\"plain\">" + listBuf.map(function(x){ return "<li>" + inlineMd(x) + "</li>"; }).join("") + "</ol>");
+      listBuf = [];
+    }
+    function flushSources(){
+      if(!srcBuf.length) return;
+      var items = splitItems(srcBuf.join("\n").replace(/\s*\n\s*/g, " "));
+      var lis = items.map(function(it){
+        var tag = "", rest = it;
+        var tm = rest.match(/^\s*(政府报告|官媒|行业报告|百科)\s*[｜|]?\s*/);
+        if(tm){ tag = '<span class="tag">' + tm[1] + "</span>"; rest = rest.slice(tm[0].length); }
+        var linked = inlineMd(rest);
+        linked += /https?:\/\//.test(rest)
+          ? ' <span class="acc">（访问时间：' + accessDate + '）</span>'
+          : ' <span class="acc">（无可访问链接，标注待核）</span>';
+        return "<li>" + tag + linked + "</li>";
+      }).join("");
+      out.push('<ol class="sources">' + lis + "</ol>");
+      out.push("</footer>");
+      srcBuf = [];
+    }
+    for(var j = 0; j < lines.length; j++){
+      var ln = lines[j];
+      if(!ln.trim()){
+        if(srcMode){ srcBuf.push(" "); } else { flushPara(); flushList(); }
+        continue;
+      }
+      var h = headingOf(ln);
+      if(h){
+        flushPara(); flushList();
+        if(srcMode){ flushSources(); srcMode = false; }
+        if(/信息来源/.test(h.text)){
+          closeSec();
+          out.push('<footer class="sources">' + headingHtml("信息来源"));
+          srcMode = true;
+          continue;
+        }
+        if(/导语/.test(h.text)){ openSec("lede"); out.push(headingHtml(h.text)); continue; }
+        if(/^(尾声|结语)/.test(h.text)){ openSec("coda"); out.push(headingHtml(h.text)); continue; }
+        closeSec();
+        out.push(headingHtml(h.text));
+        continue;
+      }
+      if(srcMode){ srcBuf.push(ln.trim()); continue; }
+      var t = ln.trim();
+      if(/^([-•]|\d{1,2}[.、])\s*/.test(t)){
+        flushPara();
+        splitItems(t).forEach(function(x){ listBuf.push(x); });
+        continue;
+      }
+      flushList();
+      paraBuf.push(t);
+    }
+    flushPara(); flushList();
+    if(srcMode){ flushSources(); } else { closeSec(); }
+    return [
+"<!DOCTYPE html>","<html lang=\"zh-CN\">","<head>","<meta charset=\"UTF-8\">",
+"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+"<title>" + escapeHtml(title) + "</title>","<style>",
+"  :root{--paper:#FAF7F2;--ink:#1C1B19;--muted:#6B6459;--accent:#B3372B;--rule:#E2DCD2;--link:#2F4156;}",
+"  *{box-sizing:border-box;}",
+"  body{margin:0;background:var(--paper);color:var(--ink);font-family:\"Noto Serif SC\",\"Songti SC\",serif;font-size:18px;line-height:1.9;}",
+"  article{max-width:42rem;margin:0 auto;padding:3rem 1.5rem 3.5rem;}",
+"  .kicker{font-family:\"Noto Sans SC\",sans-serif;font-size:.78rem;letter-spacing:.35em;color:var(--accent);text-transform:uppercase;}",
+"  h1{font-size:clamp(2.15rem,7vw,3em);line-height:1.25;margin:.35em 0 .55em;}",
+"  h2{font-size:1.35em;border-top:1px solid var(--rule);padding-top:1.15em;margin:2.2em 0 1em;line-height:1.55;}",
+"  h2 .num{color:var(--accent);}",
+"  p{margin:0 0 1.1em;}",
+"  ol.plain{padding-left:1.5em;margin:0 0 1.1em;}",
+"  ol.plain li{margin-bottom:.45em;}",
+"  section.lede{border-left:3px solid var(--accent);padding-left:1.25em;font-size:1.15em;}",
+"  section.lede h2{border-top:none;padding-top:0;margin:.2em 0 .7em;font-size:.85em;font-family:\"Noto Sans SC\",sans-serif;letter-spacing:.15em;color:var(--accent);}",
+"  section.coda p{font-size:1.08em;}",
+"  footer.sources{margin-top:2.8em;border-top:1px solid var(--rule);padding-top:1.3em;font-family:\"Noto Sans SC\",sans-serif;font-size:14px;line-height:1.8;color:var(--muted);}",
+"  footer.sources h2{border-top:none;padding-top:0;margin:0 0 1em;font-family:\"Noto Sans SC\",sans-serif;font-size:.95em;font-weight:500;letter-spacing:.12em;color:var(--muted);}",
+"  ol.sources{list-style:none;margin:0;padding:0;}",
+"  ol.sources li{margin-bottom:1em;word-break:break-word;}",
+"  .tag{display:inline-block;border:1px solid var(--accent);color:var(--accent);font-size:.72rem;letter-spacing:.12em;padding:0 .45em;margin-right:.35em;line-height:1.7;vertical-align:.08em;}",
+"  .acc{font-size:.85em;color:var(--muted);}",
+"  a{color:#2F4156;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere;}",
+"  @media (max-width:640px){body{font-size:17px;}article{padding:2rem 1.1rem 2.6rem;}}",
+"  @media print{body{background:#fff;font-size:12pt;}article{max-width:none;padding:0;}",
+"    h2{border-top:.5pt solid #999;}h2 .num{color:#000;}.tag{border:none;padding:0;}",
+"    a{color:#000;}a::after{content: \" (\" attr(href) \")\";font-size:9pt;}}",
+"</style>","</head>","<body>","<article>",
+"  <p class=\"kicker\">社论 · EDITORIAL</p>",
+out.join("\n"),
+"</article>","</body>","</html>"
+    ].join("\n");
+  }
+  function download(name, content, mime){
+    var blob = new Blob([content], {type:(mime || "text/plain") + ";charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+
+  /* ---------- 事件绑定 ---------- */
+  $("a-provider").addEventListener("change", function(){
+    var p = PROVIDERS[this.value];
+    if(p && p.base){ $("a-base").value = p.base; $("a-model").value = p.model; }
+    refreshBadge();
+  });
+  ["a-base","a-model","a-key","a-temp","a-timeout","a-system","a-endpoint"].forEach(function(id){
+    $(id).addEventListener("input", function(){
+      refreshBadge();
+      clearTimeout(window.__cfgTimer);
+      window.__cfgTimer = setTimeout(saveConfig, 400);
+    });
+  });
+  $("a-provider").addEventListener("change", function(){
+    clearTimeout(window.__cfgTimer);
+    window.__cfgTimer = setTimeout(saveConfig, 400);
+  });
+  $("btnSaveApi").addEventListener("click", function(){
+    saveConfig();
+    status($("apiStatus"), "配置已保存到本机浏览器。", "ok");
+  });
+  $("btnClearKey").addEventListener("click", function(){
+    $("a-key").value = "";
+    try{ localStorage.removeItem(CFG_KEYS.key); }catch(e){}
+    refreshBadge();
+    status($("apiStatus"), "本机密钥已清除。", "");
+  });
+  $("btnTestApi").addEventListener("click", function(){
+    saveConfig();
+    status($("apiStatus"), "正在测试连接……", "busy");
+    callChat([{role:"user",content:"请只回复两个字。可用"}], function(){
+      status($("apiStatus"), "连接成功，接口可用。", "ok");
+    }, function(err){
+      status($("apiStatus"), "连接失败。" + err.message, "err");
+    });
+  });
+
+  $("btnBuild").addEventListener("click", function(){
+    $("promptOut").value = buildPrompt();
+    status($("promptStatus"), "提示词已生成，可继续编辑或直接用于生成。", "ok");
+  });
+  $("btnSample").addEventListener("click", function(){
+    $("p-topic").value = "土地财政转型";
+    $("p-thesis").value = "地方财政制度如果不随房地产供求格局而改革，再大的化债额度也终将填不满卖地收入留下的缺口";
+    $("p-sub1").value = "卖地收入四年腰斩，土地红利走向退场";
+    $("p-sub2").value = "化债额度买不来时间，收入结构决定债务未来";
+    $("p-sub3").value = "城镇化率67.89%，增量扩张的老路走到尽头";
+    $("p-clues").value = "财政部2026年1-10月财政收支情况、国家统计局2026年1-10月房地产数据、中央城市工作会议、二十届三中全会《决定》";
+    $("p-audience").value = "财经媒体评论版，面向政策研究者与关心公共财政的读者";
+    $("p-modelinfo").value = "";
+    $("promptOut").value = buildPrompt();
+    status($("promptStatus"), "示例参数已填入并生成提示词。", "ok");
+  });
+  $("btnCopyPrompt").addEventListener("click", function(){
+    var t = $("promptOut").value;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(function(){ status($("promptStatus"),"提示词已复制。","ok"); });
+    } else {
+      $("promptOut").select(); document.execCommand("copy");
+      status($("promptStatus"),"提示词已复制。","ok");
+    }
+  });
+  $("btnDownloadPrompt").addEventListener("click", function(){
+    download("prompt_editorial.md", $("promptOut").value || buildPrompt(), "text/markdown");
+    status($("promptStatus"), "已下载 prompt_editorial.md。", "ok");
+  });
+
+  var lastOutput = "", lastHtml = "";
+  $("btnGen").addEventListener("click", function(){
+    var promptText = $("promptOut").value.trim() || buildPrompt();
+    if(!$("promptOut").value.trim()){ $("promptOut").value = promptText; }
+    var c = getConfig();
+    if(!c.key){ status($("genStatus"), "请先填写 API Key 并保存配置。", "err"); return; }
+    $("btnGen").disabled = true; $("btnAbort").disabled = false;
+    status($("genStatus"), "正在调用 " + c.model + " 生成社论，通常需要 30 至 90 秒……", "busy");
+    var t0 = Date.now();
+    callChat([
+      {role:"system", content: c.system},
+      {role:"user", content: promptText}
+    ], function(text, cfg){
+      $("btnGen").disabled = false; $("btnAbort").disabled = true;
+      lastOutput = text; lastHtml = renderEditorialHtml(text);
+      $("genOut").textContent = text;
+      var secs = Math.round((Date.now() - t0)/1000);
+      $("genMeta").innerHTML = "";
+      [cfg.model, "字数 " + text.replace(/\s/g,"").length, "耗时 " + secs + "s", new Date().toLocaleString()].forEach(function(v){
+        var s = document.createElement("span"); s.textContent = v; $("genMeta").appendChild(s);
+      });
+      status($("genStatus"), "生成完成。", "ok");
+    }, function(err){
+      $("btnGen").disabled = false; $("btnAbort").disabled = true;
+      status($("genStatus"), "生成失败。" + err.message, "err");
+    });
+  });
+  $("btnAbort").addEventListener("click", function(){
+    if(currentAbort){ try{ currentAbort.abort(); }catch(e){} }
+  });
+  $("btnCopyGen").addEventListener("click", function(){
+    if(!lastOutput){ status($("genStatus"),"暂无成稿可复制。","err"); return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(lastOutput).then(function(){ status($("genStatus"),"全文已复制。","ok"); });
+    }
+  });
+  $("btnDownloadMd").addEventListener("click", function(){
+    if(!lastOutput){ status($("genStatus"),"暂无成稿可下载。","err"); return; }
+    download("editorial_output.md", lastOutput, "text/markdown");
+    status($("genStatus"), "已下载 editorial_output.md。", "ok");
+  });
+  $("btnRender").addEventListener("click", function(){
+    if(!lastOutput){ status($("genStatus"),"暂无成稿可渲染。","err"); return; }
+    $("genOut").textContent = "已渲染为报刊页面，点击「下载成稿 .html」保存，或用下方预览查看。\n\n" + lastOutput;
+    status($("genStatus"), "渲染完成，可下载独立 HTML 页面。", "ok");
+  });
+  $("btnDownloadHtml").addEventListener("click", function(){
+    if(!lastOutput){ status($("genStatus"),"暂无成稿可下载。","err"); return; }
+    download("editorial_output.html", lastHtml || renderEditorialHtml(lastOutput), "text/html");
+    status($("genStatus"), "已下载 editorial_output.html。", "ok");
+  });
+
+  /* 初始化 */
+  loadConfig();
+  $("promptOut").value = buildPrompt();
+})();
+</script>
+</body>
+</html>

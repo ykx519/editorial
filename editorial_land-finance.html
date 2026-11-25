@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>潮水退去，谁在财政的沙滩上裸泳｜社论</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --ink:#1C1B19;
+    --muted:#6B6459;
+    --accent:#B3372B;
+    --rule:#E2DCD2;
+    --link:#2F4156;
+    --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",serif;
+    --sans:"Noto Sans SC","PingFang SC",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:18px;
+    line-height:1.9;
+    font-weight:400;
+  }
+  article{
+    max-width:42rem;
+    margin:0 auto;
+    padding:3rem 1.5rem 3.5rem;
+  }
+  /* 栏目标签 */
+  .kicker{
+    font-family:var(--sans);
+    font-size:.78rem;
+    font-weight:500;
+    letter-spacing:.35em;
+    color:var(--accent);
+    margin:0 0 .9rem;
+    text-transform:uppercase;
+  }
+  /* 主标题 */
+  h1{
+    font-family:var(--serif);
+    font-size:clamp(2.15rem,7vw,3em);
+    font-weight:700;
+    line-height:1.25;
+    margin:0 0 .55em;
+    letter-spacing:.02em;
+  }
+  .dateline{
+    font-family:var(--sans);
+    font-size:.82rem;
+    color:var(--muted);
+    letter-spacing:.08em;
+    margin:0 0 2.2em;
+  }
+  .dateline .sep{color:var(--accent);padding:0 .35em;}
+  /* 导语 */
+  .lede{
+    border-left:3px solid var(--accent);
+    padding-left:1.25em;
+    font-size:1.2em;
+    line-height:1.85;
+    margin:0 0 2.4em;
+  }
+  .lede p{margin:0 0 .9em;}
+  .lede p:last-child{margin-bottom:0;}
+  /* 分节小标题 */
+  h2{
+    font-family:var(--serif);
+    font-size:1.35em;
+    font-weight:700;
+    line-height:1.55;
+    border-top:1px solid var(--rule);
+    padding-top:1.15em;
+    margin:2.4em 0 1em;
+  }
+  h2 .num{color:var(--accent);font-weight:700;}
+  /* 正文 */
+  p{margin:0 0 1.1em;}
+  /* 数据块 */
+  blockquote{
+    margin:1.7em 0;
+    padding:.15em 0 .15em 1.15em;
+    border-left:3px solid var(--accent);
+    font-size:1.05em;
+    line-height:1.85;
+  }
+  blockquote p{margin:0;}
+  /* 尾声 */
+  .coda p{
+    font-size:1.08em;
+    line-height:1.95;
+  }
+  /* 备选标题 */
+  aside.alt-titles{
+    margin:3em 0 0;
+    border-top:1px solid var(--rule);
+    padding-top:1.2em;
+  }
+  aside.alt-titles h2{
+    border-top:none;
+    padding-top:0;
+    margin:0 0 .7em;
+    font-family:var(--sans);
+    font-size:.95em;
+    font-weight:500;
+    letter-spacing:.12em;
+    color:var(--muted);
+  }
+  aside.alt-titles ol{
+    margin:0;
+    padding-left:1.4em;
+    font-size:.92em;
+    line-height:1.85;
+    color:var(--ink);
+  }
+  aside.alt-titles li{margin-bottom:.35em;}
+  /* 信息来源 */
+  footer.sources{
+    margin-top:2.8em;
+    border-top:1px solid var(--rule);
+    padding-top:1.3em;
+    font-family:var(--sans);
+    font-size:14px;
+    line-height:1.8;
+    color:var(--muted);
+  }
+  footer.sources h2{
+    border-top:none;
+    padding-top:0;
+    margin:0 0 1em;
+    font-family:var(--sans);
+    font-size:.95em;
+    font-weight:500;
+    letter-spacing:.12em;
+    color:var(--muted);
+  }
+  ol.sources{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  ol.sources li{
+    margin-bottom:1em;
+    padding-left:0;
+    word-break:break-word;
+  }
+  .tag{
+    display:inline-block;
+    border:1px solid var(--accent);
+    color:var(--accent);
+    font-size:.72rem;
+    letter-spacing:.12em;
+    padding:0 .45em;
+    margin-right:.15em;
+    line-height:1.7;
+    vertical-align:.08em;
+  }
+  .sep-bar{color:var(--accent);padding:0 .15em;}
+  .dash{color:var(--accent);padding:0 .15em;}
+  ol.sources a{
+    color:var(--link);
+    text-decoration:underline;
+    text-underline-offset:2px;
+    overflow-wrap:anywhere;
+  }
+  /* 移动端 */
+  @media (max-width:640px){
+    body{font-size:17px;line-height:1.88;}
+    article{padding:2rem 1.1rem 2.6rem;}
+    .lede{font-size:1.15em;padding-left:1em;}
+    h2{margin-top:2em;}
+  }
+  /* 打印 */
+  @media print{
+    body{background:#fff;color:#000;font-size:12pt;line-height:1.75;}
+    article{max-width:none;padding:0;}
+    .kicker,.dateline{color:#000;letter-spacing:.06em;}
+    .kicker{border-bottom:1pt solid #000;padding-bottom:.4em;}
+    h2{border-top:.5pt solid #999;}
+    h2 .num{color:#000;}
+    blockquote{border-left:1.5pt solid #000;}
+    .lede{border-left:1.5pt solid #000;}
+    .tag{border:none;padding:0;font-size:9pt;}
+    .tag::after{content:"";}
+    ol.sources a{color:#000;}
+    ol.sources a::after{content:" (" attr(href) ")";font-size:9pt;}
+  }
+</style>
+</head>
+<body>
+<article>
+  <header>
+    <p class="kicker">社论 · EDITORIAL</p>
+    <h1>潮水退去，谁在财政的沙滩上裸泳</h1>
+    <p class="dateline">2026年11月25日<span class="sep">·</span>本报评论员</p>
+  </header>
+
+  <section class="lede">
+    <p>11月20日，财政部发布2026年1至10月财政收支情况。国有土地使用权出让收入18526亿元，同比下降25.8%。而在2021年全年，这一数字还是87051亿元。翻译过来就是，四年多时间，地方卖地的收入缩水了一半以上，且收缩仍在加速。</p>
+    <p>收入端在退潮，支出端的惯性还在。2025年末，全国地方政府债务余额548231亿元，相当于当年全国一般公共预算收入216045亿元的两倍半。换句话说，涨了二十多年的卖地财政已经走到转折点，替代它的税源尚未长成。改革的步点慢半拍，矛盾就会在下一个预算年度里重新显形。</p>
+  </section>
+
+  <section>
+    <h2><span class="num">一、</span>87051亿与18526亿之间，土地红利正在退场</h2>
+    <p>土地出让收入的收缩不是波动，是趋势。2025年，全国国有土地使用权出让收入41518亿元，同比下降14.7%，较2021年的峰值87051亿元累计减少约52%。翻译过来就是，地方政府靠卖地拿到的钱，四年少了一半还多。</p>
+    <blockquote>
+      <p>2026年1至10月，国有土地使用权出让收入18526亿元，同比下降25.8%，同期地方政府性基金预算本级收入24566亿元，同比下降20.4%。</p>
+    </blockquote>
+    <p>换句话说，两成以上的降幅说明收缩还在提速，基金收入的缩水幅度更大。</p>
+    <p>回望1994年分税制改革，中央与地方的财力格局重新划分，地方开始在土地上做文章。1998年7月，《国务院关于进一步深化城镇住房制度改革加快住房建设的通知》印发，住房商品化启动，土地价值随之被重新定价。2021年，87051亿元土地出让收入占当年地方政府性基金预算本级收入93936亿元的92.7%。换句话说，当年地方政府每收100元基金收入，就有93元来自卖地。二十六年间，卖地从补充收入变成了主力，路径依赖就此固化。</p>
+    <p>制度根源在于土地供给与财政分成的安排。征地、出让、开发的收益归地方，一次性的出让金却按年花掉，支出刚性逐年累积。2026年1至10月，国有土地使用权出让收入相关支出27919亿元，比同期出让收入多出约9400亿元。换句话说，即便支出同步收缩，当期卖地收入也已覆盖不了相关支出。若不把收入来源从一次性出让转向可持续税收，财政的腾挪空间只会越来越小。</p>
+  </section>
+
+  <section>
+    <h2><span class="num">二、</span>54.82万亿地方债压顶，2万亿置换额度买不来时间</h2>
+    <p>债务的规模，要放在收入坐标里看。2025年末，国债余额约41.23万亿元，地方政府债务余额约54.82万亿元，全国政府债务余额合计约96.05万亿元，控制在全国人大批准的约99.85万亿元限额之内。翻译过来就是，账本没有破线，但离天花板已经很近。</p>
+    <blockquote>
+      <p>化解存量隐性债务的6万亿元额度分三年安排，2024至2026年每年2万亿元，2026年正是收官之年。</p>
+    </blockquote>
+    <p>换句话说，置换能腾出利息和期限，腾不出新的收入。</p>
+    <p>把视野拉长看，这轮收缩来得并不突然。1998年住房商品化改革启动，此后二十余年，房地产扩张与地方举债同步放大，2021年土地出让收入87051亿元见顶。2024年11月8日，全国人大常委会批准6万亿元置换额度，用于置换各类存量隐性债务。当年的化债安排针对的是存量风险，可2026年1至10月出让收入同比再降25.8%，收入端的收缩比置换的节奏更快。历史对照很清楚，靠置换争取的时间窗口必须用来换收入来源，否则债务问题只会换个形式回来。</p>
+    <p>风险的落点在县区。2026年1至10月，地方政府性基金预算本级收入只有24566亿元，同比下降20.4%，而债务还本付息的支出是刚性的。换句话说，越是依赖卖地的地方，化债的余地越小。若收入结构不变，置换完成之日就是新一轮压力显形之时。把风险后移，不等于把风险消除。</p>
+  </section>
+
+  <section>
+    <h2><span class="num">三、</span>67.89%的城镇化率提醒我们，增量扩张的老路已经走到尽头</h2>
+    <p>发展阶段变了。2025年，国内生产总值1401879亿元，同比增长5.0%，年末常住人口城镇化率67.89%，比上年末提高0.89个百分点。翻译过来就是，城镇化仍在推进，但增速已不足以支撑从前的卖地节奏。</p>
+    <blockquote>
+      <p>2026年1至10月，二手房交易网签面积67971万平方米，同比增长11.4%，同期新建商品房销售面积61358万平方米，同比下降13.7%。</p>
+    </blockquote>
+    <p>换句话说，楼市已从新房主导转入存量主导。两个口径不完全可比，但方向足够清晰。</p>
+    <p>回望1998年，住房商品化改革启动，此后二十余年，建房、卖地、再建房的循环支撑了地方财政。2025年7月14日至15日，中央城市工作会议召开，判断我国城市发展正从大规模增量扩张阶段转向存量提质增效为主的阶段。2026年1至10月，房地产开发投资57215亿元，同比下降21.6%，新建商品房销售额58550亿元，同比下降14.3%。投资与销售双双回落，旧循环的两项支撑同时松动。</p>
+    <p>制度却还停在增量时代。土地供应指标、财政分成、项目审批，大多仍围着新增用地运转。2026年1至10月，契税3102亿元，同比下降14.9%，土地增值税2991亿元，同比下降16.6%。换句话说，与土地交易直接挂钩的税种正在同步失速。若考核与税制不改，城市更新就可能沦为新增供地的名目，风险最终落在财政与民生上。</p>
+  </section>
+
+  <section>
+    <h2>改革路径——把地方财政的重心移出卖地循环</h2>
+    <p><strong>第一，让城市更新接棒土地开发。</strong>中共中央办公厅、国务院办公厅《关于持续推进城市更新行动的意见》（2025年5月2日印发）要求健全多元化投融资方式，建立可持续的城市更新模式。住建与自然资源部门在2026年供地和审批环节落实自然资源部办公厅《关于做好2024年住宅用地供应有关工作的通知》，商品住宅去化周期超过36个月的城市暂停新增商品住宅用地出让，把指标优先投向老旧小区、老旧街区和城中村改造。建议设定三年目标，把存量更新类投资占房地产开发投资的比重提高到三成以上（建议目标）。2026年1至10月二手住宅交易的活跃度表明，存量市场接得住这股投资，开发投资的降幅有望逐步收窄。</p>
+    <p><strong>第二，把消费税的征收环节后移并稳步下划地方。</strong>《中共中央关于进一步全面深化改革、推进中国式现代化的决定》（2024年7月18日通过）明确推进消费税征收环节后移并稳步下划地方，完善房地产税收制度。税务部门在批发零售环节调整征管流程，地方财政把工作重心从卖地转向促消费和服务业。建议设定目标，2027年前完成主要税目征收环节后移试点扩围，消费税下划部分占地方税收收入的比重达到一成左右（建议目标）。税源换了，地方政府的行为才会跟着换，财政收入也从一次性出让金换成可持续的流转税。</p>
+    <p><strong>第三，用好置换额度的收官年，把省下的利息投向民生。</strong>《全国人民代表大会常务委员会关于批准〈国务院关于提请审议增加地方政府债务限额置换存量隐性债务的议案〉的决议》（2024年11月8日通过）确定6万亿元额度分三年安排，每年2万亿元。财政部门在2026年债券发行环节把高息短期隐性债务换成低息长期政府债券，县区财政把腾出的利息空间优先用于养老金发放和义务教育。目标是完成当年2万亿元置换，把隐性债务规模继续压降。置换解决的是存量风险，真正决定未来的仍是收入结构。</p>
+    <p><strong>第四，让租赁市场接住新市民的住房需求。</strong>《住房租赁条例》（国务院令第812号，2025年7月16日公布，2025年9月15日施行）为住房租赁活动立了规矩。地方政府在2026年供地计划中把租赁住房和保障房用地比例提到两成以上（建议目标），市场监管部门依条例管住租赁企业的资金链。2026年1至10月二手房交易网签面积67971万平方米，同比增长11.4%，存量房源正是租赁供给的主要来源。住房稳得住，人才留得住，消费才起得来。</p>
+  </section>
+
+  <section class="coda">
+    <h2>尾声</h2>
+    <p>倘若财政转型持续滞后，当下看似平稳的收支图景，不过是转瞬即逝的涨潮。等到土地红利的潮水彻底消散，自然会看清，究竟是谁在沙滩上裸泳。</p>
+  </section>
+
+  <aside class="alt-titles">
+    <h2>备选标题</h2>
+    <ol>
+      <li>四年腰斩的卖地收入，正在给旧模式读秒</li>
+      <li>别把退潮当成下一次涨潮的间歇</li>
+      <li>当87051亿变成18526亿，账本比口号诚实</li>
+      <li>从卖地到经营存量，财政转型没有回头路</li>
+      <li>潮水退去之前，先把泳衣缝进税制</li>
+    </ol>
+  </aside>
+
+  <footer class="sources">
+    <h2>信息来源</h2>
+    <ol class="sources">
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>财政部《2026年1—10月财政收支情况》（2026年11月20日发布）<span class="dash">——</span>1至10月国有土地使用权出让收入18526亿元，同比下降25.8%，地方政府性基金预算本级收入24566亿元，同比下降20.4%。<br><a href="http://m.mof.gov.cn/czxw/202611/t20261119_4004986.htm">http://m.mof.gov.cn/czxw/202611/t20261119_4004986.htm</a></li>
+      <li><span class="tag">官媒</span><span class="sep-bar">｜</span>中国新闻网《财政部公布2025年财政收支情况》（2026年1月30日）<span class="dash">——</span>2025年全国国有土地使用权出让收入41518亿元，同比下降14.7%，全国一般公共预算收入216045亿元。<br><a href="https://www.chinanews.com.cn/cj/2026/01-30/10562505.shtml">https://www.chinanews.com.cn/cj/2026/01-30/10562505.shtml</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>财政部《2021年财政收支情况》（2022年1月29日发布）<span class="dash">——</span>2021年国有土地使用权出让收入87051亿元，同比增长3.5%，地方政府性基金预算本级收入93936亿元。<br><a href="http://www.mof.gov.cn/jrttts/202201/t20220129_3785852.htm">http://www.mof.gov.cn/jrttts/202201/t20220129_3785852.htm</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>国家统计局《2026年1—10月份全国房地产市场基本情况》（2026年11月16日发布）<span class="dash">——</span>房地产开发投资57215亿元，同比下降21.6%，新建商品房销售面积61358万平方米，同比下降13.7%，新建商品房销售额58550亿元，同比下降14.3%。<br><a href="https://www.stats.gov.cn/sj/zxfbhjd/202611/t20261116_1965840.html">https://www.stats.gov.cn/sj/zxfbhjd/202611/t20261116_1965840.html</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>国家统计局《中华人民共和国2025年国民经济和社会发展统计公报》（2026年2月28日发布）<span class="dash">——</span>2025年国内生产总值1401879亿元，增长5.0%，年末常住人口城镇化率67.89%，比上年末提高0.89个百分点。<br><a href="https://www.stats.gov.cn/sj/zxfbhjd/202602/t20260228_1962662.html">https://www.stats.gov.cn/sj/zxfbhjd/202602/t20260228_1962662.html</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>财政部《关于2025年中央和地方预算执行情况与2026年中央和地方预算草案的报告》（2026年3月5日）<span class="dash">——</span>2025年末国债余额约41.23万亿元，地方政府债务余额约54.82万亿元，全国政府债务限额约99.85万亿元。<br><a href="https://www.gov.cn/yaowen/liebiao/202603/content_7062689.htm">https://www.gov.cn/yaowen/liebiao/202603/content_7062689.htm</a></li>
+      <li><span class="tag">官媒</span><span class="sep-bar">｜</span>光明日报《全国人大常委会批准增加6万亿元地方政府债务限额置换存量隐性债务》（2024年11月9日）<span class="dash">——</span>6万亿元债务限额分3年安排，2024至2026年每年2万亿元。<br><a href="http://epaper.gmw.cn/gmrb/html/2024-11/09/nw.D110000gmrb_20241109_2-03.htm">http://epaper.gmw.cn/gmrb/html/2024-11/09/nw.D110000gmrb_20241109_2-03.htm</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>中共中央办公厅、国务院办公厅《关于持续推进城市更新行动的意见》（2025年5月2日）<span class="dash">——</span>提出健全多元化投融资方式，建立政府引导、市场运作、公众参与的城市更新可持续模式。<br><a href="https://www.zyshgzb.gov.cn/n1/2025/0516/c460433-40481216.html">https://www.zyshgzb.gov.cn/n1/2025/0516/c460433-40481216.html</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>中央城市工作会议（2025年7月14日至15日）<span class="dash">——</span>我国城市发展正从大规模增量扩张阶段转向存量提质增效为主的阶段。<br><a href="https://www.scopsr.gov.cn/xwzx/ttxw/202507/t20250716_391238.html">https://www.scopsr.gov.cn/xwzx/ttxw/202507/t20250716_391238.html</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>《中共中央关于进一步全面深化改革、推进中国式现代化的决定》（2024年7月18日通过）<span class="dash">——</span>推进消费税征收环节后移并稳步下划地方，完善房地产税收制度。<br><a href="https://www.gov.cn/zhengce/202407/content_6963770.htm">https://www.gov.cn/zhengce/202407/content_6963770.htm</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>自然资源部办公厅《关于做好2024年住宅用地供应有关工作的通知》（2024年5月）<span class="dash">——</span>商品住宅去化周期超过36个月的，应暂停新增商品住宅用地出让。<br><a href="https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202405/t20240507_6444440.htm">https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202405/t20240507_6444440.htm</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>国务院《住房租赁条例》（国务院令第812号，2025年7月16日公布）<span class="dash">——</span>规范住房租赁活动，自2025年9月15日起施行。<br><a href="https://xzfg.moj.gov.cn/front/law/detail?LawID=1774&amp;jump=true">https://xzfg.moj.gov.cn/front/law/detail?LawID=1774&amp;jump=true</a></li>
+      <li><span class="tag">政府报告</span><span class="sep-bar">｜</span>国务院《关于进一步深化城镇住房制度改革加快住房建设的通知》（国发〔1998〕23号，1998年7月3日）<span class="dash">——</span>稳步推进住房商品化、社会化，建立城镇住房新制度。<br><a href="http://www.gd.gov.cn/zwgk/wjk/zcfgk/content/post_2722921.html">http://www.gd.gov.cn/zwgk/wjk/zcfgk/content/post_2722921.html</a></li>
+      <li><span class="tag">百科</span><span class="sep-bar">｜</span>百度百科《财政分税制》<span class="dash">——</span>1994年分税制财政管理体制的背景与制度沿革梳理，仅用于背景性事实。<br><a href="http://baike.baidu.com/item/财政分税制/0">http://baike.baidu.com/item/财政分税制/0</a></li>
+    </ol>
+  </footer>
+</article>
+</body>
+</html>
