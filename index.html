@@ -46,6 +46,23 @@
   .status.ok{color:var(--ok);} .status.err{color:var(--accent);} .status.busy{color:var(--warn);}
   .tip{font-size:.8rem;color:var(--muted);margin:.7rem 0 0;}
   .tip b{color:var(--warn);}
+  .imgrow{border:1px solid var(--rule);padding:.9rem 1rem;margin:.9rem 0;background:#FDFCFA;}
+  .imgrow-head{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;}
+  .imgrow-head select{width:auto;margin-top:0;}
+  button.sm{padding:.25rem .7rem;font-size:.8rem;}
+  .thumb{max-width:12rem;max-height:7.5rem;border:1px solid var(--rule);margin-top:.7rem;display:block;}
+  .imgtools{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;margin-top:.75rem;}
+  .imgtools .linkbtn{display:inline-block;padding:.25rem .7rem;font-size:.8rem;border:1px solid var(--accent);color:var(--accent);text-decoration:none;}
+  .imgresults{display:grid;grid-template-columns:repeat(auto-fill,minmax(8.5rem,1fr));gap:.6rem;margin-top:.7rem;}
+  .imgresults .cell{border:1px solid var(--rule);padding:.35rem;background:#fff;cursor:pointer;}
+  .imgresults .cell:hover{border-color:var(--accent);}
+  .imgresults img{width:100%;height:5.2rem;object-fit:cover;display:block;}
+  .imgresults .cap{font-size:.68rem;color:var(--muted);line-height:1.5;margin-top:.3rem;max-height:3em;overflow:hidden;}
+  .srcrow{display:grid;grid-template-columns:1fr 14rem auto;gap:.6rem;align-items:center;border:1px solid var(--rule);padding:.7rem .9rem;margin:.7rem 0;background:#FDFCFA;}
+  .srcrow .txt{font-size:.82rem;color:var(--ink);line-height:1.7;}
+  .srcrow input{margin-top:0;}
+  .srcrow .btns{display:flex;gap:.45rem;flex-wrap:wrap;}
+  @media (max-width:760px){.srcrow{grid-template-columns:1fr;}}
   #promptOut{min-height:22rem;font-family:var(--sans);font-size:.86rem;}
   #genOut{min-height:16rem;font-family:var(--serif);font-size:1.02rem;line-height:1.95;white-space:pre-wrap;background:#FCFAF6;}
   .doc-wrap{border:1px solid var(--rule);padding:1.35rem 1.5rem;background:#FCFAF6;}
@@ -79,7 +96,7 @@
     <div class="grid">
       <label class="f">议题 / 主题
         <input type="text" id="p-topic" placeholder="例。土地财政转型"></label>
-      <label class="f">核心论点（XXX制度/政策如果不随XXX而改革，再XXX也终将XXX）
+      <label class="f">核心论点
         <input type="text" id="p-thesis" placeholder="例。地方财政制度如果不随房地产供求格局而改革……"></label>
       <label class="f">分论点方向 1
         <input type="text" id="p-sub1" placeholder="例。卖地收入四年腰斩"></label>
@@ -162,6 +179,7 @@
     </div>
     <div class="row" style="margin-top:0;">
       <button id="btnGen">生成社论</button>
+      <label style="font-size:.85rem;color:var(--muted);align-self:center;"><input type="checkbox" id="autoFix" checked> 生成后自动补全来源链接 + 自动配图</label>
       <button class="ghost" id="btnAbort" disabled>中止</button>
       <button class="ghost" id="btnCopyGen">复制全文</button>
       <button class="ghost" id="btnDownloadMd">下载成稿 .md</button>
@@ -173,7 +191,45 @@
       <span class="kv" id="genMeta"></span>
     </div>
     <div class="doc-wrap"><div id="genOut">成稿输出区。点击「生成社论」开始。</div></div>
-    <p class="tip">成稿应包含主标题、导语、三个分论点、措施、尾声、信息来源与备选标题。可将输出粘贴到 <a href="score.html">文章评分</a> 页做综合评分。</p>
+    <p class="tip">成稿应包含主标题、导语、三个分论点、措施部分、尾声、信息来源与备选标题。可将输出粘贴到 <a href="score.html">文章评分</a> 页做综合评分。</p>
+  </section>
+  <!-- ④ 图片插入与来源注记 -->
+  <section class="panel" id="sec-img">
+    <div class="sec-head">
+      <span class="sec-num">四</span>
+      <h2>图片插入与来源注记</h2>
+      <span class="hint">标题图 · 各章节图 · 结尾图，结尾按插入顺序注记来源</span>
+    </div>
+    <div class="row" style="margin-top:0;">
+      <button id="btnAddImg">添加图片</button>
+      <button class="ghost" id="btnQuickSet">一键补齐（标题图 + 各章节图 + 结尾图）</button>
+      <button class="ghost" id="btnAiPlan">AI 配图方案</button>
+      <button class="dark" id="btnAutoImg">一键自动配图（搜索并插入）</button>
+      <span class="status" id="imgStatus"></span>
+    </div>
+    <div id="imgList"></div>
+    <p class="tip" id="imgCheck">尚未添加图片。建议至少包含标题图（主题/导语相关）、各章节图与结尾图。</p>
+    <div class="row">
+      <button class="dark" id="btnRenderWithImg">渲染为报刊页面（含图片）</button>
+      <button class="ghost" id="btnDownloadHtml2">下载成稿 .html</button>
+    </div>
+    <div style="margin-top:1.1rem;"><iframe id="previewFrame" title="成稿预览" style="width:100%;height:28rem;border:1px solid var(--rule);background:#fff;"></iframe></div>
+    <p class="tip">本地图片自动转为 base64 内嵌，成稿 HTML 保持单文件、双击可开。建议单张图片不超过 1MB。图片按插入顺序编号（图1、图2……），结尾自动生成「图片说明」注记来源。</p>
+  </section>
+  <!-- ⑤ 来源链接补全 -->
+  <section class="panel" id="sec-src">
+    <div class="sec-head">
+      <span class="sec-num">五</span>
+      <h2>来源链接补全</h2>
+      <span class="hint">超链接或纯文字网址均可，应用后自动链接化并附访问时间</span>
+    </div>
+    <div class="row" style="margin-top:0;">
+      <button id="btnParseSrc">解析信息来源</button>
+      <button class="dark" id="btnApplySrc">应用到成稿并重新渲染</button>
+      <span class="status" id="srcStatus"></span>
+    </div>
+    <div id="srcList"></div>
+    <p class="tip">缺链接的条目可点「AI 补链」由模型给出最可能的官方页面（请务必点「搜索核验」确认真伪），或点「搜索核验」打开 Bing 查到地址后粘贴。应用后网址以超链接形式插入并附访问时间，仍无网址的条目会标注待核。默认搜索引擎可换为百度或 Google。</p>
   </section>
 </main>
 
@@ -194,7 +250,7 @@
 "你同时承担两个角色。第一重身份是资深社论评论员，擅长经济、政策与社会治理议题的深度评论，文风冷静、笃定、有锋芒。第二重身份是编辑与排版师，负责把成稿渲染为可直接发布的报刊风格页面。","",
 "## 输入参数","",
 "- 议题/主题。【议题/主题】",
-"- 核心论点。【核心论点，格式为 XXX制度/政策如果不随XXX而改革，再XXX也终将XXX】",
+"- 核心论点。【核心论点】",
 "- 分论点方向（可选，3个）。【分论点方向1】【分论点方向2】【分论点方向3】",
 "- 政策文件与数据线索（可选）。【政策文件与数据线索】",
 "- 发布渠道与目标读者（可选）。【发布渠道与目标读者】",
@@ -209,12 +265,12 @@
 "【XXX制度/政策如果不随XXX而改革，再XXX也终将XXX】","",
 "### 4.【分论点】","",
 "3 个分论点，方向分别为【分论点方向1】【分论点方向2】【分论点方向3】。每个分论点须包含。判断句形式的小标题。带时间、数据、案例的论据。从现象到制度层面的归因分析。固定三段式。现象与数据、历史或国际对照、制度归因与风险预判。","",
-"### 5.【措施】","",
+"### 5.【措施部分】","",
 "单独设小标题，用“第一、第二、第三、第四”列出 4 条可操作建议。每条必须包含。政策文件名称（如有）与发布时间。具体数据或目标数值。落地场景描述（谁、在什么环节、做什么、达到什么效果）。","",
 "### 6.【尾声】","",
 "呼应标题的核心隐喻，以警示性比喻收束，不超过 150 字，参考句式。“倘若XXX持续滞后，当下看似XXX的图景，不过是转瞬即逝的XXX。等到XXX消散，自然会看清，究竟是谁在XXX中裸泳。”","",
 "### 7.【信息来源】","",
-"格式固定为。序号. 来源类型｜来源名称《文章标题》——具体数据摘要 + URL。","每条来源必须附完整可访问的 URL（http 开头），禁止写“URL待补”或省略链接，无法给出可访问链接的来源必须删除或明确标注待核。","",
+"格式固定为。序号. 来源类型｜来源名称《文章标题》——具体数据摘要 + URL。","每条来源必须以纯文字写出完整可访问的 URL（http 开头），渲染时会转为超链接并附访问时间；严禁“URL待补”“链接待补”等占位文字；无法给出可访问链接的来源必须删除或明确标注待核。","",
 "### 8.【数据与来源偏好】","",
 "1. 引用数据与检索来源时，按以下优先级取材，同题冲突时以高优先级为准。",
 "   第一优先级。政府报告与官方统计。国务院及各部委文件、白皮书、统计公报、",
@@ -243,7 +299,7 @@
 "- 论证主线固定为。数据对比切入 → 现象描述 → 历史或国际对照 → 归因到制度 → 提出路径 → 隐喻收尾",
 "- 批判性用词准许，但必须指向制度与结构，不得进行人身攻击或事实性指控","",
 "### 10.【输出格式】","",
-"直接输出完整社论，含标题、导语、3 个分论点、措施、尾声、信息来源。禁止任何前言、后记、自我说明或“以下是”之类的开场白。正文使用提示词参数【发布渠道与目标读者】所要求的称谓与语体。","",
+"直接输出完整社论，含标题、导语、3 个分论点、措施部分、尾声、信息来源。禁止任何前言、后记、自我说明或“以下是”之类的开场白。正文使用提示词参数【发布渠道与目标读者】所要求的称谓与语体。","",
 "## 成稿附带要求","",
 "- 标题。主标题 1 个，另附 3 至 5 个备选标题（置于文末）。",
 "- 导语。用最新具体数据、时间、现象切入，直接点明矛盾，禁用寒暄套话。",
@@ -266,7 +322,7 @@
 "10. 输出为纯文本成稿，无前言后记，无自我说明。"
   ].join("\n");
 
-  var DEFAULT_SYSTEM = "你是资深社论评论员兼排版师，严格执行提示词中的禁令与来源规则。信息来源必须逐条给出完整可访问的 URL（http 开头），禁止写“URL待补”或省略链接，无法给出可访问链接的来源必须删除或明确标注待核。";
+  var DEFAULT_SYSTEM = "你是资深社论评论员兼排版师，严格执行提示词中的禁令与来源规则。信息来源每条都必须以纯文字形式写出完整网址（http 开头），渲染时会自动转为超链接并附访问时间；严禁出现“URL待补”“链接待补”等占位文字；无法给出可访问链接的来源必须删除或明确标注待核。";
 
   var PROVIDERS = {
     deepseek:{base:"https://api.deepseek.com/v1", model:"deepseek-chat"},
@@ -394,7 +450,7 @@
     return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日";
   }
   function escapeHtml(s){
-    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
   }
   function inlineMd(s){
     var e = escapeHtml(s);
@@ -405,6 +461,9 @@
       var tm = url.match(/[，。、；：）)】」》]+$/);
       if(tm){ trail = tm[0]; url = url.slice(0, -trail.length); }
       return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>' + trail;
+    });
+    e = e.replace(/(^|[\s（(【「，。；：、＞>])((?:www\.)[^\s<>"'，。；：）)】」》]+)/g, function(m, pre, dom){
+      return pre + '<a href="https://' + dom + '" target="_blank" rel="noopener">' + dom + '</a>';
     });
     return e;
   }
@@ -437,8 +496,29 @@
     if(mm) return '<h2><span class="num">' + escapeHtml(mm[1]) + '</span>' + escapeHtml(mm[2]) + '</h2>';
     return "<h2>" + escapeHtml(txt) + "</h2>";
   }
-  function renderEditorialHtml(text){
+  function renderEditorialHtml(text, imgs){
+    imgs = imgs || [];
     var accessDate = fmtDate(new Date());
+    var titleImgQueue = [], secImgQueue = [], endImgQueue = [];
+    imgs.forEach(function(im){
+      if(im.slot === "title") titleImgQueue.push(im);
+      else if(im.slot === "ending") endImgQueue.push(im);
+      else secImgQueue.push(im);
+    });
+    function slotLabel(s){ return s === "title" ? "标题图" : (s === "ending" ? "结尾图" : "章节图"); }
+    function figureHtml(im){
+      var n = imgs.indexOf(im) + 1;
+      return '<figure class="fig"><img src="' + im.src + '" alt="图' + n + '">' +
+        '<figcaption>图' + n + '｜' + slotLabel(im.slot) + (im.caption ? '｜' + escapeHtml(im.caption) : '') + '</figcaption></figure>';
+    }
+    function notesHtml(){
+      var items = imgs.map(function(im, i){
+        var srcTxt = im.source ? escapeHtml(im.source) : "未标注";
+        if(im.sourceUrl) srcTxt += '（<a href="' + im.sourceUrl + '" target="_blank" rel="noopener">' + escapeHtml(im.sourceUrl) + '</a>）';
+        return '<li>图' + (i + 1) + '｜' + slotLabel(im.slot) + '｜' + (im.caption ? escapeHtml(im.caption) : "无图注") + '｜来源。' + srcTxt + ' <span class="acc">（访问时间：' + accessDate + '）</span></li>';
+      }).join("");
+      return '<section class="imgnotes"><h2>图片说明（按插入顺序记录图片来源）</h2><ol>' + items + '</ol></section>';
+    }
     var rawLines = text.replace(/\r/g, "").split("\n");
     /* 删除备选标题区块 */
     var lines = [], dropping = false;
@@ -458,6 +538,7 @@
       var fh = headingOf(first);
       title = fh ? fh.text : first.trim().replace(/^#+\s*/, "");
       out.push("<h1>" + escapeHtml(title) + "</h1>");
+      while(titleImgQueue.length){ out.push(figureHtml(titleImgQueue.shift())); }
       started = true;
     }
     var paraBuf = [], listBuf = [], srcBuf = [];
@@ -467,7 +548,10 @@
       if(cls){ out.push('<section class="' + cls + '">'); secClass = cls; }
     }
     function closeSec(){
-      if(secClass){ out.push("</section>"); secClass = ""; }
+      if(secClass){
+        if(secClass === "coda"){ while(endImgQueue.length){ out.push(figureHtml(endImgQueue.shift())); } }
+        out.push("</section>"); secClass = "";
+      }
     }
     function flushPara(){
       if(!paraBuf.length) return;
@@ -516,6 +600,7 @@
         if(/^(尾声|结语)/.test(h.text)){ openSec("coda"); out.push(headingHtml(h.text)); continue; }
         closeSec();
         out.push(headingHtml(h.text));
+        if(/^[一二三四五六]、/.test(h.text) && secImgQueue.length){ out.push(figureHtml(secImgQueue.shift())); }
         continue;
       }
       if(srcMode){ srcBuf.push(ln.trim()); continue; }
@@ -530,6 +615,8 @@
     }
     flushPara(); flushList();
     if(srcMode){ flushSources(); } else { closeSec(); }
+    while(endImgQueue.length){ out.push(figureHtml(endImgQueue.shift())); }
+    if(imgs.length){ out.push(notesHtml()); }
     return [
 "<!DOCTYPE html>","<html lang=\"zh-CN\">","<head>","<meta charset=\"UTF-8\">",
 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
@@ -545,6 +632,13 @@
 "  p{margin:0 0 1.1em;}",
 "  ol.plain{padding-left:1.5em;margin:0 0 1.1em;}",
 "  ol.plain li{margin-bottom:.45em;}",
+"  figure.fig{margin:1.6em 0;}",
+"  figure.fig img{display:block;width:100%;height:auto;border:1px solid var(--rule);}",
+"  figure.fig figcaption{font-family:\"Noto Sans SC\",sans-serif;font-size:.82em;color:var(--muted);margin-top:.5em;line-height:1.7;}",
+"  section.imgnotes{margin-top:2.4em;border-top:1px solid var(--rule);padding-top:1.1em;}",
+"  section.imgnotes h2{border-top:none;padding-top:0;font-family:\"Noto Sans SC\",sans-serif;font-size:.92em;font-weight:500;letter-spacing:.12em;color:var(--muted);}",
+"  section.imgnotes ol{padding-left:1.5em;font-size:.88em;color:var(--muted);line-height:1.85;}",
+"  section.imgnotes li{margin-bottom:.5em;}",
 "  section.lede{border-left:3px solid var(--accent);padding-left:1.25em;font-size:1.15em;}",
 "  section.lede h2{border-top:none;padding-top:0;margin:.2em 0 .7em;font-size:.85em;font-family:\"Noto Sans SC\",sans-serif;letter-spacing:.15em;color:var(--accent);}",
 "  section.coda p{font-size:1.08em;}",
@@ -654,7 +748,7 @@ out.join("\n"),
       {role:"user", content: promptText}
     ], function(text, cfg){
       $("btnGen").disabled = false; $("btnAbort").disabled = true;
-      lastOutput = text; lastHtml = renderEditorialHtml(text);
+      lastOutput = text; lastHtml = renderEditorialHtml(text, images);
       $("genOut").textContent = text;
       var secs = Math.round((Date.now() - t0)/1000);
       $("genMeta").innerHTML = "";
@@ -662,6 +756,10 @@ out.join("\n"),
         var s = document.createElement("span"); s.textContent = v; $("genMeta").appendChild(s);
       });
       status($("genStatus"), "生成完成。", "ok");
+      if(autoEnabled()){
+        status($("genStatus"), "生成完成，正在自动补全来源链接并自动配图……", "busy");
+        setTimeout(autoFixSourcesThenImages, 400);
+      }
     }, function(err){
       $("btnGen").disabled = false; $("btnAbort").disabled = true;
       status($("genStatus"), "生成失败。" + err.message, "err");
@@ -681,20 +779,389 @@ out.join("\n"),
     download("editorial_output.md", lastOutput, "text/markdown");
     status($("genStatus"), "已下载 editorial_output.md。", "ok");
   });
-  $("btnRender").addEventListener("click", function(){
-    if(!lastOutput){ status($("genStatus"),"暂无成稿可渲染。","err"); return; }
-    $("genOut").textContent = "已渲染为报刊页面，点击「下载成稿 .html」保存，或用下方预览查看。\n\n" + lastOutput;
-    status($("genStatus"), "渲染完成，可下载独立 HTML 页面。", "ok");
-  });
+  $("btnRender").addEventListener("click", function(){ doRender(true); });
   $("btnDownloadHtml").addEventListener("click", function(){
     if(!lastOutput){ status($("genStatus"),"暂无成稿可下载。","err"); return; }
-    download("editorial_output.html", lastHtml || renderEditorialHtml(lastOutput), "text/html");
+    doDownloadHtml();
     status($("genStatus"), "已下载 editorial_output.html。", "ok");
   });
+
+  /* ---------- 图片插入与来源注记 ---------- */
+  var images = [];
+  function escAttr(s){ return escapeHtml(s || ""); }
+  function renderImageList(){
+    var box = $("imgList");
+    box.innerHTML = "";
+    images.forEach(function(im, i){
+      var row = document.createElement("div");
+      row.className = "imgrow";
+      row.innerHTML =
+        '<div class="imgrow-head"><b>图' + (i + 1) + '</b>' +
+        '<select data-k="slot">' +
+        '<option value="title"' + (im.slot === "title" ? " selected" : "") + '>标题图（主题/导语）</option>' +
+        '<option value="section"' + (im.slot === "section" ? " selected" : "") + '>章节图（按插入顺序匹配各小节）</option>' +
+        '<option value="ending"' + (im.slot === "ending" ? " selected" : "") + '>结尾图（尾声）</option>' +
+        '</select>' +
+        '<button class="ghost sm" data-a="up">上移</button>' +
+        '<button class="ghost sm" data-a="down">下移</button>' +
+        '<button class="ghost sm" data-a="del">删除</button></div>' +
+        '<div class="grid">' +
+        '<label class="f">图注 / 说明<input type="text" data-k="caption" value="' + escAttr(im.caption) + '" placeholder="例。城市更新中的老旧小区改造现场"></label>' +
+        '<label class="f">来源标注（写入结尾注记）<input type="text" data-k="source" value="' + escAttr(im.source) + '" placeholder="例。新华社2025年报道"></label>' +
+        '<label class="f">来源链接（可选）<input type="text" data-k="sourceUrl" value="' + escAttr(im.sourceUrl) + '" placeholder="https://..."></label>' +
+        '<label class="f">图片地址（URL）<input type="text" data-k="src" value="' + escAttr(im.src) + '" placeholder="https://... 或用下方本地上传"></label>' +
+        '<label class="f">本地图片（自动转 base64 内嵌）<input type="file" accept="image/*" data-k="file"></label>' +
+        '<label class="f">搜索关键词（用于搜图）<input type="text" data-k="keywords" value="' + escAttr(im.keywords || "") + '" placeholder="例。城市更新 老旧小区 改造"></label>' +
+        '</div>' +
+        (im.src ? '<img class="thumb" src="' + escAttr(im.src) + '" alt="图' + (i + 1) + ' 预览">' : '') +
+        '<div class="imgtools">' +
+        '<button class="ghost sm" data-a="search">搜开放图库</button>' +
+        '<a class="ghost sm linkbtn" target="_blank" rel="noopener" href="' + escAttr(ENGINE.bing(rowKeywords(im))) + '">Bing 图片</a>' +
+        '<a class="ghost sm linkbtn" target="_blank" rel="noopener" href="' + escAttr(ENGINE.baidu(rowKeywords(im))) + '">百度图片</a>' +
+        '<a class="ghost sm linkbtn" target="_blank" rel="noopener" href="' + escAttr(ENGINE.google(rowKeywords(im))) + '">Google 图片</a>' +
+        '</div>' +
+        '<div class="imgresults" data-a="results"></div>';
+      row.querySelectorAll("[data-k]").forEach(function(el){
+        var k = el.getAttribute("data-k");
+        if(k === "file"){
+          el.addEventListener("change", function(){
+            var f = this.files && this.files[0];
+            if(!f) return;
+            if(f.size > 1.5 * 1024 * 1024){
+              status($("imgStatus"), "图片超过 1.5MB，内嵌后文件会偏大，建议压缩后再上传。", "err");
+            }
+            var reader = new FileReader();
+            reader.onload = function(){ im.src = reader.result; renderImageList(); status($("imgStatus"), "本地图片已内嵌。", "ok"); };
+            reader.readAsDataURL(f);
+          });
+          return;
+        }
+        el.addEventListener(el.tagName === "SELECT" ? "change" : "input", function(){
+          im[k] = this.value;
+          if(k === "slot" || k === "src") renderImageList();
+        });
+      });
+      row.querySelectorAll("button[data-a]").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          var a = btn.getAttribute("data-a");
+          if(a === "search"){
+            var q = rowKeywords(im);
+            if(!q){ status($("imgStatus"), "请先填写搜索关键词或图注。", "err"); return; }
+            var box2 = row.querySelector('[data-a="results"]');
+            box2.innerHTML = '<div class="cap">正在搜索开放图库……</div>';
+            Promise.all([
+              searchOpenverse(q).catch(function(){ return []; }),
+              searchCommons(q).catch(function(){ return []; })
+            ]).then(function(list){
+              renderResults(im, box2, list[0].concat(list[1]));
+            }).catch(function(){
+              box2.innerHTML = '<div class="cap">搜索接口不可达，请用 Bing / 百度 / Google 按钮搜索后粘贴图片链接。</div>';
+            });
+            return;
+          }
+          if(a === "del"){ images.splice(i, 1); }
+          if(a === "up" && i > 0){ var t = images[i - 1]; images[i - 1] = images[i]; images[i] = t; }
+          if(a === "down" && i < images.length - 1){ var t2 = images[i + 1]; images[i + 1] = images[i]; images[i] = t2; }
+          renderImageList();
+        });
+      });
+      box.appendChild(row);
+    });
+    checkImages();
+  }
+  function checkImages(){
+    var counts = {title:0, section:0, ending:0};
+    images.forEach(function(im){ if(counts[im.slot] != null) counts[im.slot] += im.src ? 1 : 0; });
+    var miss = [];
+    if(!counts.title) miss.push("标题图（主题/导语相关）");
+    if(!counts.section) miss.push("各章节图");
+    if(!counts.ending) miss.push("结尾图");
+    $("imgCheck").textContent = "当前图片 " + images.length + " 张（已填图源。标题图 " + counts.title +
+      "、章节图 " + counts.section + "、结尾图 " + counts.ending + "）。" +
+      (miss.length ? "建议补齐。" + miss.join("、") + "。" : "标题图、各章节图、结尾图已齐。") +
+      "结尾将按插入顺序自动注记图片来源。";
+  }
+  function doRender(scroll){
+    if(!lastOutput){ status($("imgStatus"), "暂无成稿，请先在上方生成社论。", "err"); return null; }
+    lastHtml = renderEditorialHtml(lastOutput, images);
+    var f = $("previewFrame");
+    if(f){ f.srcdoc = lastHtml; }
+    status($("imgStatus"), "渲染完成（含 " + images.length + " 张图片与结尾来源注记），可在预览中查看并下载。", "ok");
+    if(scroll && f){ f.scrollIntoView({behavior:"smooth", block:"center"}); }
+    return lastHtml;
+  }
+  function doDownloadHtml(){
+    var html = lastHtml || doRender(false);
+    if(!html) return;
+    download("editorial_output.html", html, "text/html");
+  }
+  $("btnAddImg").addEventListener("click", function(){
+    images.push({slot:"section", caption:"", source:"", sourceUrl:"", src:""});
+    renderImageList();
+    status($("imgStatus"), "已添加图片位，请填写图片与来源。", "ok");
+  });
+  $("btnQuickSet").addEventListener("click", function(){
+    images.push({slot:"title", caption:"标题图（主题/导语相关）", source:"", sourceUrl:"", src:""});
+    images.push({slot:"section", caption:"章节一配图", source:"", sourceUrl:"", src:""});
+    images.push({slot:"section", caption:"章节二配图", source:"", sourceUrl:"", src:""});
+    images.push({slot:"section", caption:"章节三配图", source:"", sourceUrl:"", src:""});
+    images.push({slot:"ending", caption:"结尾配图", source:"", sourceUrl:"", src:""});
+    renderImageList();
+    status($("imgStatus"), "已按“标题图 + 各章节图 + 结尾图”补齐 5 个图片位。", "ok");
+  });
+  $("btnRenderWithImg").addEventListener("click", function(){ doRender(true); });
+  $("btnDownloadHtml2").addEventListener("click", function(){
+    if(!lastOutput){ status($("imgStatus"), "暂无成稿可下载。", "err"); return; }
+    doDownloadHtml();
+    status($("imgStatus"), "已下载 editorial_output.html（含图片与来源注记）。", "ok");
+  });
+
+  /* ---------- 图片搜索获取（Bing/百度/Google + 开放图库） ---------- */
+  var ENGINE = {
+    bing: function(q){ return "https://www.bing.com/images/search?q=" + encodeURIComponent(q || ""); },
+    baidu: function(q){ return "https://image.baidu.com/search/index?tn=baiduimage&word=" + encodeURIComponent(q || ""); },
+    google: function(q){ return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(q || ""); }
+  };
+  function rowKeywords(im){ return (im.keywords || im.caption || "").trim(); }
+  function parseJsonLoose2(text){
+    var t = String(text).replace(/```json/gi,"").replace(/```/g,"").trim();
+    var s = t.indexOf("{"), e = t.lastIndexOf("}");
+    if(s < 0 || e < 0) throw new Error("模型未返回 JSON。");
+    return JSON.parse(t.slice(s, e + 1));
+  }
+  function searchOpenverse(q){
+    return fetch("https://api.openverse.org/v1/images/?q=" + encodeURIComponent(q) + "&page_size=8")
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        return (d.results || []).map(function(x){
+          return {thumb:x.thumbnail || x.url, full:x.url,
+            label:"Openverse｜" + (x.creator || "未知作者") + "｜" + (x.license || "") + (x.license_version ? " " + x.license_version : ""),
+            page:x.foreign_landing_url || x.url};
+        }).filter(function(x){ return !!x.full; });
+      });
+  }
+  function searchCommons(q){
+    var u = "https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=" + encodeURIComponent(q) +
+      "&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=640&format=json&origin=*";
+    return fetch(u).then(function(r){ return r.json(); }).then(function(d){
+      var pages = (d.query && d.query.pages) ? Object.keys(d.query.pages).map(function(k){ return d.query.pages[k]; }) : [];
+      return pages.map(function(p){
+        var ii = (p.imageinfo && p.imageinfo[0]) || {};
+        return {thumb:ii.thumburl || ii.url, full:ii.url, label:"Wikimedia Commons｜" + p.title, page:ii.descriptionurl || ii.url};
+      }).filter(function(x){ return !!x.full; });
+    });
+  }
+  function renderResults(im, container, results){
+    container.innerHTML = "";
+    if(!results.length){
+      container.innerHTML = '<div class="cap">未找到结果，可点上方 Bing / 百度 / Google 按钮手动搜索并粘贴图片链接。</div>';
+      return;
+    }
+    results.slice(0, 8).forEach(function(r){
+      var cell = document.createElement("div");
+      cell.className = "cell";
+      cell.innerHTML = '<img src="' + escAttr(r.thumb) + '" alt=""><div class="cap">' + escapeHtml(r.label) + '</div>';
+      cell.addEventListener("click", function(){
+        im.src = r.full;
+        im.source = r.label;
+        im.sourceUrl = r.page;
+        renderImageList();
+        status($("imgStatus"), "已插入图片，来源已按插入顺序写入结尾注记。可用「搜开放图库」或上传本地图片随时替换。", "ok");
+      });
+      container.appendChild(cell);
+    });
+  }
+  function aiImagePlan(auto){
+    if(!lastOutput){ status($("imgStatus"), "暂无成稿，请先生成社论。", "err"); return; }
+    status($("imgStatus"), "正在生成配图方案……", "busy");
+    callChat([
+      {role:"system", content:"你是报刊图片编辑。只输出 JSON，不输出多余文字。"},
+      {role:"user", content:"为下面这篇社论设计配图方案。至少包括标题图（主题/导语相关）、每个小节一张章节图、结尾图。为每张图给出中文搜索关键词（8 至 12 字，便于图片搜索）与一句图注。只输出 JSON。结构如下。{\"title\":{\"keywords\":\"\",\"caption\":\"\"},\"sections\":[{\"heading\":\"\",\"keywords\":\"\",\"caption\":\"\"}],\"ending\":{\"keywords\":\"\",\"caption\":\"\"}}\n\n文章如下。\n" + String(lastOutput).slice(0, 6000)}
+    ], function(out){
+      try{
+        var plan = parseJsonLoose2(out);
+        var keepUserSrc = {};
+        images.forEach(function(im){ if(im.src) keepUserSrc[im.slot + "|" + (im.caption || "")] = im; });
+        images = [];
+        if(plan.title) images.push({slot:"title", caption:plan.title.caption || "标题图（主题/导语相关）", keywords:plan.title.keywords || "", source:"", sourceUrl:"", src:""});
+        (plan.sections || []).forEach(function(s){
+          images.push({slot:"section", caption:s.caption || s.heading || "章节图", keywords:s.keywords || "", source:"", sourceUrl:"", src:""});
+        });
+        if(plan.ending) images.push({slot:"ending", caption:plan.ending.caption || "结尾配图", keywords:plan.ending.keywords || "", source:"", sourceUrl:"", src:""});
+        renderImageList();
+        status($("imgStatus"), "配图方案已生成（标题图 + " + (plan.sections || []).length + " 张章节图 + 结尾图）。" + (auto ? "开始自动搜图……" : "可逐张点搜图或直接一键自动配图。"), "ok");
+        if(auto) autoFillImages();
+      }catch(e){ status($("imgStatus"), "配图方案解析失败。" + e.message, "err"); }
+    }, function(err){ status($("imgStatus"), "配图方案生成失败。" + err.message, "err"); });
+  }
+  function autoFillImages(){
+    var queue = images.filter(function(im){ return !im.src && rowKeywords(im); });
+    if(!queue.length){ status($("imgStatus"), "没有可自动搜图的图片位（已有图片或缺关键词）。", ""); return; }
+    status($("imgStatus"), "正在为 " + queue.length + " 张图片自动搜图……", "busy");
+    var chain = Promise.resolve();
+    queue.forEach(function(im){
+      chain = chain.then(function(){
+        return Promise.all([
+          searchOpenverse(rowKeywords(im)).catch(function(){ return []; }),
+          searchCommons(rowKeywords(im)).catch(function(){ return []; })
+        ]).then(function(list){
+          var all = list[0].concat(list[1]);
+          if(all.length){
+            im.src = all[0].full;
+            im.source = all[0].label;
+            im.sourceUrl = all[0].page;
+          }
+        });
+      });
+    });
+    chain.then(function(){
+      renderImageList();
+      var ok = images.filter(function(x){ return x.src; }).length;
+      status($("imgStatus"), "自动搜图完成，已插入 " + ok + " / " + images.length + " 张。可逐张点「搜开放图库」挑选替换，或上传本地图片替换。", ok === images.length ? "ok" : "err");
+    });
+  }
+  $("btnAiPlan").addEventListener("click", function(){ aiImagePlan(false); });
+  $("btnAutoImg").addEventListener("click", function(){
+    if(images.length && images.some(function(im){ return rowKeywords(im); })){ autoFillImages(); }
+    else { aiImagePlan(true); }
+  });
+
+  /* ---------- 来源链接补全 ---------- */
+  function parseSourceEntries(){
+    if(!lastOutput) return [];
+    var lines = String(lastOutput).replace(/\r/g,"").split("\n");
+    var inSrc = false, buf = [];
+    for(var i = 0; i < lines.length; i++){
+      var h = headingOf(lines[i]);
+      if(h && /信息来源/.test(h.text)){ inSrc = true; continue; }
+      if(inSrc){
+        if(h && !/信息来源/.test(h.text)) break;
+        buf.push(lines[i].trim());
+      }
+    }
+    var joined = buf.join("\n").replace(/\s*\n\s*/g, " ");
+    return splitItems(joined).map(function(t){
+      var m = t.match(/https?:\/\/\S+|(?:www\.)\S+/);
+      var url = m ? m[0].replace(/[，。、；：）)】」》]+$/, "") : "";
+      return {text:t.replace(/^\d+[.、]\s*/, "").replace(/\s*(?:https?:\/\/|www\.)\S+/g, "").replace(/URL待补[^0-9]*$/, "").trim(), url:url};
+    }).filter(function(r){ return !!r.text; });
+  }
+  var srcRows = [];
+  function renderSrcList(){
+    srcRows = parseSourceEntries();
+    var box = $("srcList");
+    box.innerHTML = "";
+    if(!srcRows.length){
+      box.innerHTML = '<p class="tip">未找到信息来源条目，请先生成社论（信息来源需以“信息来源”小节标注）。</p>';
+      return;
+    }
+    srcRows.forEach(function(row, i){
+      var d = document.createElement("div");
+      d.className = "srcrow";
+      d.innerHTML =
+        '<div class="txt">' + (i + 1) + '. ' + escapeHtml(row.text.slice(0, 150)) + (row.text.length > 150 ? '…' : '') + '</div>' +
+        '<input type="text" data-k="url" value="' + escAttr(row.url) + '" placeholder="粘贴网页链接（https://...）">' +
+        '<div class="btns"><button class="ghost sm" data-a="ai">AI 补链</button>' +
+        '<a class="ghost sm linkbtn" target="_blank" rel="noopener" href="' + escAttr("https://www.bing.com/search?q=" + encodeURIComponent(row.text.slice(0, 60))) + '">Bing</a>' +
+        '<a class="ghost sm linkbtn" target="_blank" rel="noopener" href="' + escAttr("https://www.baidu.com/s?wd=" + encodeURIComponent(row.text.slice(0, 60))) + '">百度</a>' +
+        '<a class="ghost sm linkbtn" target="_blank" rel="noopener" href="' + escAttr("https://www.google.com/search?q=" + encodeURIComponent(row.text.slice(0, 60))) + '">Google</a></div>';
+      var input = d.querySelector('[data-k="url"]');
+      input.addEventListener("input", function(){ row.url = this.value.trim(); });
+      d.querySelector('[data-a="ai"]').addEventListener("click", function(){
+        status($("srcStatus"), "第 " + (i + 1) + " 条正在补链……", "busy");
+        callChat([
+          {role:"system", content:"你是资料核验助手。只输出 JSON。不确定就输出空 url，绝不编造链接。"},
+          {role:"user", content:"请为下面这条信息来源找出最可能真实存在的官方网页链接（优先政府网站、官媒、机构官网）。只输出 JSON。{\"url\":\"https://... 或空字符串\",\"confidence\":0 到 100}\n\n来源条目。\n" + row.text}
+        ], function(out){
+          try{
+            var r = parseJsonLoose2(out);
+            if(r.url && /^https?:\/\//.test(r.url)){
+              row.url = String(r.url).trim();
+              input.value = row.url;
+              status($("srcStatus"), "第 " + (i + 1) + " 条已补链（模型可信度 " + (r.confidence != null ? r.confidence : "?") + "），请用右侧搜索引擎核验后应用。", "ok");
+            } else {
+              status($("srcStatus"), "第 " + (i + 1) + " 条未能确定链接，请用搜索引擎查到后粘贴。", "err");
+            }
+          }catch(e){ status($("srcStatus"), "补链结果解析失败。" + e.message, "err"); }
+        }, function(err){ status($("srcStatus"), "补链失败。" + err.message, "err"); });
+      });
+      box.appendChild(d);
+    });
+    status($("srcStatus"), "已解析 " + srcRows.length + " 条来源（带链接 " + srcRows.filter(function(r){ return r.url; }).length + " 条）。", "ok");
+  }
+  $("btnParseSrc").addEventListener("click", function(){ renderSrcList(); });
+  function applySourceRows(){
+    if(!lastOutput){ status($("srcStatus"), "暂无成稿。", "err"); return false; }
+    if(!srcRows.length) renderSrcList();
+    var filled = 0;
+    var items = srcRows.map(function(r, i){
+      var t = r.text.replace(/URL待补[^0-9]*$/, "").trim();
+      if(r.url){ t = t + " " + r.url; filled++; }
+      return (i + 1) + ". " + t;
+    });
+    var sectionText = "## 信息来源\n" + items.join("\n");
+    var lines = String(lastOutput).replace(/\r/g, "").split("\n");
+    var start = -1, end = lines.length;
+    for(var i = 0; i < lines.length; i++){
+      var h = headingOf(lines[i]);
+      if(start < 0 && h && /信息来源/.test(h.text)){ start = i; continue; }
+      if(start >= 0 && h){ end = i; break; }
+    }
+    if(start < 0){
+      lastOutput = String(lastOutput).replace(/\s+$/, "") + "\n\n" + sectionText + "\n";
+    } else {
+      lastOutput = lines.slice(0, start).join("\n") + "\n" + sectionText + "\n" + lines.slice(end).join("\n");
+    }
+    $("genOut").textContent = lastOutput;
+    doRender(false);
+    status($("srcStatus"), "已应用：共 " + srcRows.length + " 条来源，其中 " + filled + " 条带网页链接（超链接 + 访问时间），其余标注待核。", "ok");
+    renderSrcList();
+    return true;
+  }
+  $("btnApplySrc").addEventListener("click", function(){ applySourceRows(); });
+
+  /* ---------- 生成后自动补链 + 自动配图 ---------- */
+  function autoEnabled(){ var c = $("autoFix"); return !!(c && c.checked); }
+  function autoFixSourcesThenImages(){
+    if(!lastOutput) return;
+    var rows = parseSourceEntries();
+    if(!rows.length){ if(autoEnabled()) aiImagePlan(true); return; }
+    srcRows = rows;
+    var missing = rows.filter(function(r){ return !r.url; });
+    if(!missing.length){
+      status($("genStatus"), "来源已全部带链接，跳过补链。", "ok");
+      if(autoEnabled()) aiImagePlan(true);
+      return;
+    }
+    var idx = 0;
+    function step(){
+      if(idx >= missing.length){
+        applySourceRows();
+        status($("genStatus"), "来源自动补链完成：" + (rows.length - missing.length) + " 条原有链接 + " + missing.length + " 条自动补链，均以超链接插入并附访问时间，可点「搜索核验」复核。", "ok");
+        if(autoEnabled()) aiImagePlan(true);
+        return;
+      }
+      var row = missing[idx];
+      idx++;
+      status($("genStatus"), "正在自动补全来源链接 " + idx + "/" + missing.length + "……", "busy");
+      callChat([
+        {role:"system", content:"你是资料核验助手。只输出 JSON。不确定就输出空 url，绝不编造链接。"},
+        {role:"user", content:"请为下面这条信息来源找出最可能真实存在的官方网页链接（优先政府网站、官媒、机构官网）。只输出 JSON。{\"url\":\"https://... 或空字符串\",\"confidence\":0 到 100}\n\n来源条目。\n" + row.text}
+      ], function(out){
+        try{
+          var r = parseJsonLoose2(out);
+          if(r.url && /^https?:\/\//.test(r.url)) row.url = String(r.url).trim();
+        }catch(e){}
+        step();
+      }, function(){ step(); });
+    }
+    step();
+  }
 
   /* 初始化 */
   loadConfig();
   $("promptOut").value = buildPrompt();
+  renderImageList();
 })();
 </script>
 </body>
